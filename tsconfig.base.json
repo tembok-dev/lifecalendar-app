@@ -12,6 +12,9 @@
     "isolatedModules": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@lifecalendar/shared": ["packages/shared/src/index.ts"]
+    }
   }
 }

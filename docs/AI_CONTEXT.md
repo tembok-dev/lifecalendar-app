@@ -1,23 +1,22 @@
 # AI Context
 
 ## Project State
-- Stage: foundation only (`v0.1.0`)
-- Working monorepo with `apps/web`, `apps/api`, `packages/shared`
-- No calendar domain logic yet
+- Stage: core data + storage (`v0.2.0`)
+- API now persists to SQLite via Prisma
+- Shared package defines domain contracts and event category defaults
 
-## Architecture Rules
-- Orchestration-first pages; keep page files thin
-- Feature folders under `apps/web/src/app/features/*`
-- Reusable UI primitives under `apps/web/src/app/primitives/*`
-- Small files and explicit boundaries
+## Data Model
+- `Profile` has many `LifeEvent`
+- `Profile` has one `AppSettings`
+- `AppSettings.profileId` is unique
+
+## API Scope (Implemented)
+- Health, profile CRUD-lite, event CRUD-lite, settings read/update
+- Validation is centralized in `apps/api/src/lib/validation.ts`
+- Event visuals (`emotionalTone`, `iconKey`, `colorKey`) derive from category defaults
 
 ## Do Not Add Yet
+- Calendar week engine
 - Onboarding
-- Event CRUD
 - Auth
-
-## Visual Direction
-- Quiet wall art
-- Grid-first product surface
-- Dark-first, reflective, minimal
-- No dashboard layout patterns
+- Export UI

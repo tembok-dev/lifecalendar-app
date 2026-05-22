@@ -1,27 +1,28 @@
 # Roadmap
 
-## Phase 1 - Foundation (Current)
+## Phase 1 - Foundation (Done)
 - Repo structure
 - Web/API/shared scaffolding
 - Docs and conventions
 - Minimal app shell
 
-## Phase 2 - Core Data Models
+## Phase 2 - Core Data + Storage (Current)
 - Prisma + SQLite setup
 - Models: `Profile`, `LifeEvent`, `AppSettings`
-- Initial migration strategy
+- CRUD/settings routes with centralized validation
+- Shared typed API contracts and category defaults
 
-## Phase 3 - Calendar Core
-- Grid system and life-week canvas
-- Read-only render path
-- Time span and indexing helpers
+## Phase 3 - Calendar Engine
+- Generate weeks from `birthDate`
+- Calculate current week index
+- Map events to week cells
 
-## Phase 4 - Interactions
-- Event placement UX
-- Reflection notes UX
-- Focused keyboard interactions
+## Phase 4 - Calendar UI Surface
+- Grid-first canvas rendering
+- Calm reflective interactions
+- Event markers on week cells
 
-## Phase 5 - Product Work
-- App settings and personalization
-- Data import/export
-- Stabilization and release prep
+## Phase 5 - Product Extensions
+- Export workflows
+- Personalization refinements
+- Hardening and release prep
