@@ -1,5 +1,6 @@
 import type { EventCategory } from "../domain/event-categories.js";
 import type { AppSettings, LifeEvent, Profile } from "../domain/models.js";
+import type { CalendarSummary, CalendarWeek } from "../calendar/types.js";
 
 export interface CreateProfileInput {
   name: string;
@@ -59,6 +60,13 @@ export interface GetProfileEventsResponse {
 
 export interface GetProfileSettingsResponse {
   settings: AppSettings;
+}
+
+export interface GetProfileCalendarResponse {
+  profile: Profile;
+  settings: AppSettings;
+  summary: CalendarSummary;
+  weeks: CalendarWeek[];
 }
 
 export interface MutationProfileResponse {

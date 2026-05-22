@@ -3,6 +3,7 @@ import { healthRoutes } from "./routes/health.js";
 import { profileRoutes } from "./routes/profiles.js";
 import { eventRoutes } from "./routes/events.js";
 import { settingsRoutes } from "./routes/settings.js";
+import { calendarRoutes } from "./routes/calendar.js";
 import { RequestValidationError } from "./lib/validation.js";
 
 const app = Fastify({ logger: true });
@@ -23,6 +24,7 @@ await app.register(healthRoutes);
 await app.register(profileRoutes);
 await app.register(eventRoutes);
 await app.register(settingsRoutes);
+await app.register(calendarRoutes);
 
 const port = Number(process.env.PORT ?? 3001);
 const host = process.env.HOST ?? "0.0.0.0";

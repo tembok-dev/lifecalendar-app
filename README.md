@@ -1,38 +1,30 @@
 # Life Calendar App
 
-Stage: `v0.2.0` core data + storage foundation.
+Stage: `v0.3.0` calendar engine foundation.
 
 ## Current Scope
-- Monorepo with pnpm workspaces
-- `apps/web` React shell + typed API client wrapper (unused by UI)
-- `apps/api` Fastify + Prisma + SQLite + modular routes
-- `packages/shared` domain constants/types/contracts
-- Event categories with fixed defaults for `emotionalTone`, `iconKey`, `colorKey`
+- Shared calendar engine in `packages/shared` (pure TypeScript)
+- Life weeks generated from `birthDate` + lifespan rules
+- Event-to-week mapping by `weekIndex`
+- API endpoint `GET /profiles/:profileId/calendar`
+- Existing profile/event/settings CRUD remains active
 
 Not included yet:
-- Calendar engine/canvas logic
+- Full canvas grid UI
 - Onboarding
 - Auth
-- Export UI
+- Export workflows
 
 ## Run
-1. `pnpm install`
-2. Generate Prisma client: `pnpm --filter @lifecalendar/api prisma:generate`
-3. Run migration: `pnpm --filter @lifecalendar/api prisma:migrate`
-4. Start API: `pnpm dev:api`
-5. Start web: `pnpm dev:web`
+1. `pnpm.cmd install`
+2. `pnpm.cmd --filter @lifecalendar/api prisma:migrate`
+3. `pnpm.cmd -r typecheck`
+4. `pnpm.cmd --filter @lifecalendar/shared test`
+5. `pnpm.cmd dev:api`
+6. `pnpm.cmd dev:web`
 
-## API Routes
-- `GET /health`
-- `GET /profiles`
-- `POST /profiles`
-- `GET /profiles/:profileId`
-- `PATCH /profiles/:profileId`
-- `GET /profiles/:profileId/events`
-- `POST /profiles/:profileId/events`
-- `PATCH /events/:eventId`
-- `DELETE /events/:eventId`
-- `GET /profiles/:profileId/settings`
-- `PATCH /profiles/:profileId/settings`
+## Calendar Endpoint
+- `GET /profiles/:profileId/calendar`
+- Returns `profile`, `settings`, `summary`, and generated `weeks` with attached events.
 
 See roadmap in [ROADMAP.md](./ROADMAP.md).

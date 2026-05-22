@@ -20,3 +20,9 @@ Use fixed category vocabulary and derive event visuals from shared defaults to k
 
 ## D-007 Shared Contracts
 Expose API request/response contracts from `packages/shared` so web/api evolve on typed boundaries.
+
+## D-008 Calendar Engine Placement
+Keep life-week calculation and event attachment in `packages/shared` as pure deterministic utilities with no UI or ORM coupling.
+
+## D-009 Lifespan Safety Rules
+Clamp lifespan to safe bounds and provide defaults so calendar generation is resilient to incomplete or malformed profile data.

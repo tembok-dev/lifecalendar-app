@@ -1,22 +1,26 @@
 # AI Context
 
 ## Project State
-- Stage: core data + storage (`v0.2.0`)
-- API now persists to SQLite via Prisma
-- Shared package defines domain contracts and event category defaults
+- Stage: calendar engine foundation (`v0.3.0`)
+- Shared package now contains pure calendar computation logic
+- API exposes aggregated calendar output for one profile
 
-## Data Model
-- `Profile` has many `LifeEvent`
-- `Profile` has one `AppSettings`
-- `AppSettings.profileId` is unique
+## Calendar Engine
+- Input: plain typed `profile` + `events`
+- Output: `summary` + generated `weeks` with `events`
+- No React or Prisma dependency in shared engine
+- Handles:
+  - future birth date (graceful)
+  - missing lifespan (fallback default)
+  - invalid lifespan (clamped)
+  - out-of-range event indices (ignored safely)
 
-## API Scope (Implemented)
-- Health, profile CRUD-lite, event CRUD-lite, settings read/update
-- Validation is centralized in `apps/api/src/lib/validation.ts`
-- Event visuals (`emotionalTone`, `iconKey`, `colorKey`) derive from category defaults
+## API Scope Additions
+- `GET /profiles/:profileId/calendar`
+- Response includes `profile`, `settings`, `summary`, `weeks`
 
 ## Do Not Add Yet
-- Calendar week engine
+- Final calendar canvas UI
 - Onboarding
 - Auth
 - Export UI

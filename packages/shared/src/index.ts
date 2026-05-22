@@ -9,6 +9,19 @@ import {
   type IconKey
 } from "./domain/event-categories.js";
 import type { AppSettings, LifeEvent, Profile } from "./domain/models.js";
+import {
+  attachEventsToWeeks,
+  buildLifeCalendar,
+  buildCalendarSummary,
+  buildCalendarWeeks,
+  getCurrentLifeWeekIndex,
+  getLifeWeekRange,
+  getWeekIndexFromDate,
+  groupWeeksByLifeYear,
+  type BuiltCalendar,
+  type CalendarSummary,
+  type CalendarWeek
+} from "./calendar/index.js";
 import type {
   ApiHealthResponse,
   CreateLifeEventInput,
@@ -22,13 +35,29 @@ import type {
   MutationSettingsResponse,
   PatchAppSettingsInput,
   PatchLifeEventInput,
-  PatchProfileInput
+  PatchProfileInput,
+  GetProfileCalendarResponse
 } from "./contracts/api.js";
 
-export { APP_NAME, APP_VERSION, EVENT_CATEGORIES, EVENT_CATEGORY_DEFAULTS, deriveEventVisuals };
+export {
+  APP_NAME,
+  APP_VERSION,
+  EVENT_CATEGORIES,
+  EVENT_CATEGORY_DEFAULTS,
+  deriveEventVisuals,
+  attachEventsToWeeks,
+  buildLifeCalendar,
+  buildCalendarSummary,
+  buildCalendarWeeks,
+  getCurrentLifeWeekIndex,
+  getLifeWeekRange,
+  getWeekIndexFromDate,
+  groupWeeksByLifeYear
+};
 
 export type { AppSettings, LifeEvent, Profile };
 export type { ColorKey, EmotionalTone, EventCategory, IconKey };
+export type { BuiltCalendar, CalendarSummary, CalendarWeek };
 
 export type {
   ApiHealthResponse,
@@ -43,5 +72,6 @@ export type {
   MutationSettingsResponse,
   PatchAppSettingsInput,
   PatchLifeEventInput,
-  PatchProfileInput
+  PatchProfileInput,
+  GetProfileCalendarResponse
 };
