@@ -1,30 +1,23 @@
 # Life Calendar App
 
-Stage: `v0.3.0` calendar engine foundation.
+Stage: `v0.4.3A` design-doc consolidation before Stage 4.3B visual implementation.
 
 ## Current Scope
-- Shared calendar engine in `packages/shared` (pure TypeScript)
-- Life weeks generated from `birthDate` + lifespan rules
-- Event-to-week mapping by `weekIndex`
-- API endpoint `GET /profiles/:profileId/calendar`
-- Existing profile/event/settings CRUD remains active
+- Working calendar engine and API-backed canvas flow
+- Consolidated design governance with one UI/UX source of truth
+- No component refactor in this stage
 
-Not included yet:
-- Full canvas grid UI
-- Onboarding
-- Auth
-- Export workflows
+## Documentation Authority
+- UI/UX source of truth: `docs/DESIGN_SYSTEM.md`
+- Agent briefing: `docs/AI_CONTEXT.md`
+- Code structure rules: `docs/FRONTEND_CONVENTIONS.md`
+- Decision log: `docs/DECISIONS.md`
 
 ## Run
 1. `pnpm.cmd install`
 2. `pnpm.cmd --filter @lifecalendar/api prisma:migrate`
-3. `pnpm.cmd -r typecheck`
-4. `pnpm.cmd --filter @lifecalendar/shared test`
-5. `pnpm.cmd dev:api`
-6. `pnpm.cmd dev:web`
-
-## Calendar Endpoint
-- `GET /profiles/:profileId/calendar`
-- Returns `profile`, `settings`, `summary`, and generated `weeks` with attached events.
+3. `pnpm.cmd dev:api`
+4. `pnpm.cmd dev:web`
+5. `pnpm.cmd -r typecheck`
 
 See roadmap in [ROADMAP.md](./ROADMAP.md).

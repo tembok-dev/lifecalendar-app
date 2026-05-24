@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { healthRoutes } from "./routes/health.js";
 import { profileRoutes } from "./routes/profiles.js";
 import { eventRoutes } from "./routes/events.js";
@@ -7,6 +8,11 @@ import { calendarRoutes } from "./routes/calendar.js";
 import { RequestValidationError } from "./lib/validation.js";
 
 const app = Fastify({ logger: true });
+
+await app.register(cors, {
+  origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/],
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
+});
 
 app.setErrorHandler((error, _request, reply) => {
   if (error instanceof RequestValidationError) {

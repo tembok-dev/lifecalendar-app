@@ -1,6 +1,7 @@
 import type {
   CreateLifeEventInput,
   CreateProfileInput,
+  GetProfileCalendarResponse,
   GetProfileEventsResponse,
   GetProfileResponse,
   GetProfileSettingsResponse,
@@ -68,5 +69,7 @@ export const apiClient = {
     request<MutationSettingsResponse>(`/profiles/${profileId}/settings`, {
       method: "PATCH",
       body: JSON.stringify(input)
-    })
+    }),
+  getProfileCalendar: (profileId: string) =>
+    request<GetProfileCalendarResponse>(`/profiles/${profileId}/calendar`)
 };

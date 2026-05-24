@@ -1,6 +1,13 @@
 import type { LifeEvent, Profile } from "../domain/models.js";
 import { attachEventsToWeeks } from "./events.js";
 import { groupWeeksByLifeYear } from "./grouping.js";
+import {
+  getCalendarYearMonthSlot,
+  getCalendarYearRowFromBirth,
+  getCalendarYearWeekSlot,
+  getWeekSlotRange,
+  resolveVisualSlotStatus
+} from "./visual-mapping.js";
 import { buildCalendarSummary, buildCalendarWeeks, getCurrentLifeWeekIndex, getLifeWeekRange, getWeekIndexFromDate } from "./weeks.js";
 import type { BuildCalendarInput, BuiltCalendar, CalendarSummary, CalendarWeek, LifeWeekRange } from "./types.js";
 
@@ -29,9 +36,14 @@ export {
   buildCalendarSummary,
   buildCalendarWeeks,
   getCurrentLifeWeekIndex,
+  getCalendarYearMonthSlot,
+  getCalendarYearRowFromBirth,
+  getCalendarYearWeekSlot,
   getLifeWeekRange,
+  getWeekSlotRange,
   getWeekIndexFromDate,
-  groupWeeksByLifeYear
+  groupWeeksByLifeYear,
+  resolveVisualSlotStatus
 };
 
 export type { BuildCalendarInput, BuiltCalendar, CalendarSummary, CalendarWeek, LifeWeekRange, LifeEvent, Profile };

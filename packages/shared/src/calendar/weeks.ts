@@ -47,11 +47,20 @@ export function buildCalendarSummary(input: {
   );
 
   const totalWeeks = expectedLifespanYears * WEEKS_PER_YEAR;
-  const rawCurrentWeekIndex = diffFullWeeks(birthDate, now);
-  const currentWeekIndex = Math.min(totalWeeks - 1, Math.max(0, rawCurrentWeekIndex));
-  const completedWeeks = rawCurrentWeekIndex < 0 ? 0 : Math.min(totalWeeks, rawCurrentWeekIndex);
-  const remainingWeeks = Math.max(0, totalWeeks - completedWeeks);
   const currentAgeYears = Math.max(0, diffFullYears(birthDate, now));
+  const currentBirthday = new Date(
+    Date.UTC(
+      birthDate.getUTCFullYear() + currentAgeYears,
+      birthDate.getUTCMonth(),
+      birthDate.getUTCDate()
+    )
+  );
+  const weeksSinceBirthday = Math.max(0, diffFullWeeks(currentBirthday, now));
+  const currentWeekOfLifeYear = Math.min(WEEKS_PER_YEAR - 1, weeksSinceBirthday);
+  const normalizedCurrentWeekIndex = currentAgeYears * WEEKS_PER_YEAR + currentWeekOfLifeYear;
+  const currentWeekIndex = Math.min(totalWeeks - 1, Math.max(0, normalizedCurrentWeekIndex));
+  const completedWeeks = Math.min(totalWeeks, currentWeekIndex);
+  const remainingWeeks = Math.max(0, totalWeeks - completedWeeks);
 
   return {
     birthDate: toIsoDate(birthDate),

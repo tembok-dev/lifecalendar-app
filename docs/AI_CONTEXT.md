@@ -1,26 +1,19 @@
 # AI Context
 
-## Project State
-- Stage: calendar engine foundation (`v0.3.0`)
-- Shared package now contains pure calendar computation logic
-- API exposes aggregated calendar output for one profile
+## Current Stage
+- Stage `4.3A`: documentation consolidation before next visual pass.
+- No UI refactor in this step.
 
-## Calendar Engine
-- Input: plain typed `profile` + `events`
-- Output: `summary` + generated `weeks` with `events`
-- No React or Prisma dependency in shared engine
-- Handles:
-  - future birth date (graceful)
-  - missing lifespan (fallback default)
-  - invalid lifespan (clamped)
-  - out-of-range event indices (ignored safely)
+## Mandatory Read Before UI Work
+1. `docs/DESIGN_SYSTEM.md` (UI/UX single source of truth)
+2. `docs/FRONTEND_CONVENTIONS.md` (implementation structure)
+3. `docs/DECISIONS.md` (decision constraints)
 
-## API Scope Additions
-- `GET /profiles/:profileId/calendar`
-- Response includes `profile`, `settings`, `summary`, `weeks`
+## Agent Guardrails
+- Do not invent dashboard UI.
+- Do not add stat cards, panels, or admin chrome in default view.
+- Use the user mockup direction: vertical and horizontal poster compositions.
+- If a UI choice conflicts with `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM.md` wins.
 
-## Do Not Add Yet
-- Final calendar canvas UI
-- Onboarding
-- Auth
-- Export UI
+## Product Reminder
+Life Calendar is an emotional time poster, not productivity software.

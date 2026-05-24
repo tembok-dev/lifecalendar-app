@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { attachEventsToWeeks, buildLifeCalendar, getCurrentLifeWeekIndex, getLifeWeekRange, getWeekIndexFromDate } from "./index.js";
+import {
+  attachEventsToWeeks,
+  buildLifeCalendar,
+  getCalendarYearMonthSlot,
+  getCalendarYearRowFromBirth,
+  getCalendarYearWeekSlot,
+  getCurrentLifeWeekIndex,
+  getLifeWeekRange,
+  getWeekIndexFromDate,
+  getWeekSlotRange,
+  resolveVisualSlotStatus
+} from "./index.js";
 import type { LifeEvent, Profile } from "../domain/models.js";
 
 function makeProfile(overrides: Partial<Profile> = {}): Profile {
@@ -89,5 +100,36 @@ describe("calendar engine", () => {
     expect(low.summary.expectedLifespanYears).toBe(1);
     expect(high.summary.expectedLifespanYears).toBe(140);
     expect(missing.summary.expectedLifespanYears).toBe(90);
+  });
+
+  it("maps April event into April month slot and birth-year row", () => {
+    const birthDate = "1995-04-10T00:00:00.000Z";
+    const eventDate = "1995-04-15T00:00:00.000Z";
+
+    expect(getCalendarYearRowFromBirth(birthDate, eventDate)).toBe(0);
+    expect(getCalendarYearMonthSlot(eventDate)).toBe(3);
+  });
+
+  it("treats slots before birth in birth year as pre-birth", () => {
+    const birthDate = "1995-04-10T00:00:00.000Z";
+    const janWeek = getWeekSlotRange(1995, 0);
+    const status = resolveVisualSlotStatus({
+      slotStart: janWeek.start,
+      slotEnd: janWeek.end,
+      birthDateIso: birthDate,
+      now: new Date("1995-04-20T00:00:00.000Z")
+    });
+
+    expect(status).toBe("pre-birth");
+  });
+
+  it("places current date in May around May week slots", () => {
+    const mayDate = "2026-05-24T00:00:00.000Z";
+    const weekSlot = getCalendarYearWeekSlot(mayDate);
+    const monthSlot = getCalendarYearMonthSlot(mayDate);
+
+    expect(monthSlot).toBe(4);
+    expect(weekSlot).toBeGreaterThanOrEqual(20);
+    expect(weekSlot).toBeLessThanOrEqual(21);
   });
 });

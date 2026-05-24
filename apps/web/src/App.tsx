@@ -1,5 +1,5 @@
-import { AppShellPage } from "./app/features/shell/AppShellPage";
+import { CalendarCanvasPage } from "./app/features/calendar/CalendarCanvasPage";
 
 export function App() {
-  return <AppShellPage />;
+  return <CalendarCanvasPage />;
 }

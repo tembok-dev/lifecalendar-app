@@ -14,10 +14,15 @@ import {
   buildLifeCalendar,
   buildCalendarSummary,
   buildCalendarWeeks,
+  getCalendarYearMonthSlot,
+  getCalendarYearRowFromBirth,
+  getCalendarYearWeekSlot,
   getCurrentLifeWeekIndex,
   getLifeWeekRange,
+  getWeekSlotRange,
   getWeekIndexFromDate,
   groupWeeksByLifeYear,
+  resolveVisualSlotStatus,
   type BuiltCalendar,
   type CalendarSummary,
   type CalendarWeek
@@ -49,10 +54,15 @@ export {
   buildLifeCalendar,
   buildCalendarSummary,
   buildCalendarWeeks,
+  getCalendarYearMonthSlot,
+  getCalendarYearRowFromBirth,
+  getCalendarYearWeekSlot,
   getCurrentLifeWeekIndex,
   getLifeWeekRange,
+  getWeekSlotRange,
   getWeekIndexFromDate,
-  groupWeeksByLifeYear
+  groupWeeksByLifeYear,
+  resolveVisualSlotStatus
 };
 
 export type { AppSettings, LifeEvent, Profile };
