@@ -26,7 +26,9 @@ export const createEventSchema = z.object({
   title: z.string().trim().min(1).max(180),
   note: z.string().max(4000).nullable().optional(),
   isPrivate: z.boolean().optional(),
-  showOnExport: z.boolean().optional()
+  showOnExport: z.boolean().optional(),
+  isRecurring: z.boolean().optional(),
+  recurrenceType: z.enum(["yearly"]).nullable().optional()
 });
 
 export const patchEventSchema = createEventSchema.partial();

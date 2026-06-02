@@ -21,10 +21,22 @@ interface WeekCellProps {
   selected: boolean;
   disabled?: boolean;
   preBirth?: boolean;
-  onSelect: (weekIndex: number, anchor: { x: number; y: number }) => void;
+  onSelect: (weekIndex: number, anchor: { x: number; y: number; defaultDate: string; contextLabel: string }) => void;
+  defaultDate: string;
+  contextLabel: string;
 }
 
-export function WeekCell({ week, currentWeekIndex, currentLifeYear, selected, disabled = false, preBirth = false, onSelect }: WeekCellProps) {
+export function WeekCell({
+  week,
+  currentWeekIndex,
+  currentLifeYear,
+  selected,
+  disabled = false,
+  preBirth = false,
+  onSelect,
+  defaultDate,
+  contextLabel
+}: WeekCellProps) {
   const events = week.events;
   const firstEvent = events[0];
   const secondEvent = events[1];
@@ -60,7 +72,9 @@ export function WeekCell({ week, currentWeekIndex, currentLifeYear, selected, di
         !disabled
           ? onSelect(week.weekIndex, {
               x: event.clientX,
-              y: event.clientY
+              y: event.clientY,
+              defaultDate,
+              contextLabel
             })
           : undefined
       }

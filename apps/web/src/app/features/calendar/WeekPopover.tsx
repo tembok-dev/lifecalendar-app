@@ -1,55 +1,138 @@
-import { useEffect, useRef } from "react";
-import type { CalendarWeek } from "@lifecalendar/shared";
+import { useEffect, useMemo, useState } from "react";
+import type { CalendarWeek, LifeEvent } from "@lifecalendar/shared";
+import { EventList } from "./events/EventList";
+import { EventMiniForm } from "./events/EventMiniForm";
+import { InlineError } from "../ui/primitives/InlineError";
+import { PopoverSurface } from "../ui/primitives/PopoverSurface";
 
 interface WeekPopoverProps {
   week: CalendarWeek | null;
-  anchor: { x: number; y: number } | null;
+  eventsOverride?: LifeEvent[] | null;
+  anchor: { x: number; y: number; defaultDate: string; contextLabel: string } | null;
   onClose: () => void;
+  onCreateEvent: (input: {
+    category: LifeEvent["category"];
+    title: string;
+    date: string;
+    note: string | null;
+    isPrivate: boolean;
+    showOnExport: boolean;
+    isRecurring: boolean;
+    recurrenceType: "yearly" | null;
+  }) => Promise<void>;
+  onUpdateEvent: (
+    eventId: string,
+    input: {
+      category?: LifeEvent["category"];
+      title?: string;
+      date?: string;
+      note?: string | null;
+      isPrivate?: boolean;
+      showOnExport?: boolean;
+      isRecurring?: boolean;
+      recurrenceType?: "yearly" | null;
+    }
+  ) => Promise<void>;
+  onDeleteEvent: (eventId: string) => Promise<void>;
 }
 
-export function WeekPopover({ week, anchor, onClose }: WeekPopoverProps) {
-  const ref = useRef<HTMLDivElement>(null);
+type PopoverMode = "list" | "create" | "edit";
+
+export function WeekPopover({ week, eventsOverride, anchor, onClose, onCreateEvent, onUpdateEvent, onDeleteEvent }: WeekPopoverProps) {
+  const [mode, setMode] = useState<PopoverMode>("list");
+  const [editingEvent, setEditingEvent] = useState<LifeEvent | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!anchor) {
-      return;
+    setMode("list");
+    setEditingEvent(null);
+    setSaving(false);
+    setDeletingEventId(null);
+    setError(null);
+  }, [week?.weekIndex, anchor?.x, anchor?.y]);
+
+  const sortedEvents = useMemo(() => {
+    if (eventsOverride && eventsOverride.length > 0) {
+      return [...eventsOverride].sort((a, b) => a.date.localeCompare(b.date));
     }
-
-    const onPointerDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (!ref.current?.contains(target)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", onPointerDown);
-    return () => document.removeEventListener("mousedown", onPointerDown);
-  }, [anchor, onClose]);
+    if (!week) {
+      return [];
+    }
+    return [...week.events].sort((a, b) => a.date.localeCompare(b.date));
+  }, [week, eventsOverride]);
 
   if (!week || !anchor) {
     return null;
   }
 
-  const showAbove = anchor.y > window.innerHeight * 0.56;
-  const top = showAbove ? Math.max(14, anchor.y - 92) : anchor.y + 14;
-
   return (
-    <div
-      ref={ref}
-      className="fixed z-50 w-[188px] -translate-x-1/2 rounded-md bg-surface/95 p-2.5 text-[11px] text-muted shadow-soft backdrop-blur"
-      style={{ left: anchor.x, top }}
-      role="dialog"
-      aria-label="Week details"
-    >
-      <span
-        className="absolute left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-surface/95"
-        style={showAbove ? { bottom: -4 } : { top: -4 }}
-      />
+    <PopoverSurface open={Boolean(anchor && week)} anchor={anchor} width={280} onClose={onClose} ariaLabel="Week details and events">
+      <p className="font-medium text-zinc-100">{anchor.contextLabel}</p>
+      <p className="mt-0.5 text-[10px] text-zinc-300/78">
+        {new Date(anchor.defaultDate).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}
+      </p>
 
-      <p className="font-medium text-zinc-100">Week {week.weekIndex + 1}</p>
-      <p className="mt-0.5">Year {week.lifeYear + 1}</p>
-      <p className="mt-0.5 capitalize">{week.status}</p>
-      <p className="mt-0.5">Events {week.events.length}</p>
-    </div>
+      {mode === "list" ? (
+        <EventList
+          events={sortedEvents}
+          deletingEventId={deletingEventId}
+          onAdd={() => {
+            setMode("create");
+            setEditingEvent(null);
+            setError(null);
+          }}
+          onEdit={(event) => {
+            setMode("edit");
+            setEditingEvent(event);
+            setError(null);
+          }}
+          onDelete={async (event) => {
+            setDeletingEventId(event.id);
+            setError(null);
+            try {
+              await onDeleteEvent(event.id);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Delete failed");
+            } finally {
+              setDeletingEventId(null);
+            }
+          }}
+        />
+      ) : (
+        <EventMiniForm
+          mode={mode === "create" ? "create" : "edit"}
+          defaultDate={anchor.defaultDate}
+          initialEvent={editingEvent ?? undefined}
+          saving={saving}
+          error={error}
+          onCancel={() => {
+            setMode("list");
+            setEditingEvent(null);
+            setError(null);
+          }}
+          onSubmit={async (input) => {
+            setSaving(true);
+            setError(null);
+            try {
+              if (mode === "edit" && editingEvent) {
+                await onUpdateEvent(editingEvent.id, input);
+              } else {
+                await onCreateEvent(input);
+              }
+              setMode("list");
+              setEditingEvent(null);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Save failed");
+            } finally {
+              setSaving(false);
+            }
+          }}
+        />
+      )}
+
+      {mode === "list" ? <InlineError message={error} /> : null}
+    </PopoverSurface>
   );
 }

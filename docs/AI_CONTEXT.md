@@ -1,8 +1,8 @@
 # AI Context
 
 ## Current Stage
-- Stage `4.3A`: documentation consolidation before next visual pass.
-- No UI refactor in this step.
+- Stage `5.0`: minimal onboarding overlay.
+- First-run users create profile directly over poster canvas (no setup page).
 
 ## Mandatory Read Before UI Work
 1. `docs/DESIGN_SYSTEM.md` (UI/UX single source of truth)

@@ -1,4 +1,5 @@
 import type { EventCategory } from "../domain/event-categories.js";
+import type { RecurrenceType } from "../domain/recurrence.js";
 import type { AppSettings, LifeEvent, Profile } from "../domain/models.js";
 import type { CalendarSummary, CalendarWeek } from "../calendar/types.js";
 
@@ -22,6 +23,8 @@ export interface CreateLifeEventInput {
   note?: string | null;
   isPrivate?: boolean;
   showOnExport?: boolean;
+  isRecurring?: boolean;
+  recurrenceType?: RecurrenceType | null;
 }
 
 export interface PatchLifeEventInput {
@@ -32,6 +35,8 @@ export interface PatchLifeEventInput {
   note?: string | null;
   isPrivate?: boolean;
   showOnExport?: boolean;
+  isRecurring?: boolean;
+  recurrenceType?: RecurrenceType | null;
 }
 
 export interface PatchAppSettingsInput {

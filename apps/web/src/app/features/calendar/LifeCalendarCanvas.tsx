@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { GetProfileCalendarResponse } from "@lifecalendar/shared";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
+import type { GetProfileCalendarResponse, LifeEvent } from "@lifecalendar/shared";
 import { CalendarLegend } from "./CalendarLegend";
 import { LifeCalendarGrid } from "./LifeCalendarGrid";
 import { WeekPopover } from "./WeekPopover";
@@ -9,32 +9,101 @@ import { CalendarViewport } from "./composition/CalendarViewport";
 import { CalendarStage } from "./composition/CalendarStage";
 import { PosterTopRail } from "./composition/PosterTopRail";
 import { ReflectionSpace } from "./composition/ReflectionSpace";
+import { EventQuickAddPopover } from "./events/EventQuickAddPopover";
+import { SettingsModal } from "../settings/SettingsModal";
+import type { CalendarDisplayMode } from "./LifeCalendarGrid";
+import type { CalendarScaleMode } from "./hooks/useCalendarZoom";
+import { PopoverSurface } from "../ui/primitives/PopoverSurface";
+import { resolveCalendarDisplayMode } from "./utils/resolveCalendarDisplayMode";
 
 interface LifeCalendarCanvasProps {
   calendar: GetProfileCalendarResponse;
+  onCreateEvent: (input: {
+    category: LifeEvent["category"];
+    title: string;
+    date: string;
+    note: string | null;
+    isPrivate: boolean;
+    showOnExport: boolean;
+    isRecurring: boolean;
+    recurrenceType: "yearly" | null;
+  }) => Promise<void>;
+  onUpdateEvent: (
+    eventId: string,
+    input: {
+      category?: LifeEvent["category"];
+      title?: string;
+      date?: string;
+      note?: string | null;
+      isPrivate?: boolean;
+      showOnExport?: boolean;
+      isRecurring?: boolean;
+      recurrenceType?: "yearly" | null;
+    }
+  ) => Promise<void>;
+  onDeleteEvent: (eventId: string) => Promise<void>;
+  onUpdateProfile: (input: { name?: string; birthDate?: string; expectedLifespanYears?: number | null }) => Promise<void>;
+  onUpdateSettings: (input: {
+    showYearMarkers?: boolean;
+    showEventIcons?: boolean;
+  }) => Promise<void>;
+  onReload: () => Promise<void>;
 }
 
-export function LifeCalendarCanvas({ calendar }: LifeCalendarCanvasProps) {
+const DISPLAY_MODE_KEY = "lifecalendar.displayMode";
+const SCALE_MODE_KEY = "lifecalendar.scaleMode";
+
+export function LifeCalendarCanvas({
+  calendar,
+  onCreateEvent,
+  onUpdateEvent,
+  onDeleteEvent,
+  onUpdateProfile,
+  onUpdateSettings,
+  onReload
+}: LifeCalendarCanvasProps) {
   const [selectedWeekIndex, setSelectedWeekIndex] = useState<number | null>(calendar.summary.currentWeekIndex);
-  const [selectedAnchor, setSelectedAnchor] = useState<{ x: number; y: number } | null>(null);
+  const [selectedAnchor, setSelectedAnchor] = useState<{ x: number; y: number; defaultDate: string; contextLabel: string } | null>(null);
+  const [selectedEventsOverride, setSelectedEventsOverride] = useState<LifeEvent[] | null>(null);
   const [legendAnchor, setLegendAnchor] = useState<{ x: number; y: number } | null>(null);
+  const [quickAddAnchor, setQuickAddAnchor] = useState<{ x: number; y: number } | null>(null);
+  const [quickAddDefaultDate, setQuickAddDefaultDate] = useState<string | null>(null);
+  const [quickAddContextLabel, setQuickAddContextLabel] = useState<string | null>(null);
+  const [quickAddSaving, setQuickAddSaving] = useState(false);
+  const [quickAddError, setQuickAddError] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
+  const [displayMode, setDisplayMode] = useState<CalendarDisplayMode>(() => {
+    const stored = localStorage.getItem(DISPLAY_MODE_KEY);
+    return stored === "weeks" || stored === "months" || stored === "auto" ? stored : "auto";
+  });
+  const [defaultScaleMode, setDefaultScaleMode] = useState<CalendarScaleMode>(() => {
+    const stored = localStorage.getItem(SCALE_MODE_KEY);
+    return stored === "contain" || stored === "fit-width" ? stored : "fit-width";
+  });
 
   const centeredOnceRef = useRef(false);
   const viewportRef = useRef<HTMLDivElement>(null);
   const stageContentRef = useRef<HTMLDivElement>(null);
-  const legendRef = useRef<HTMLDivElement>(null);
 
   const layoutMode = usePosterLayout();
 
   const zoom = useCalendarZoom({
-    mode: "fit-width",
+    mode: defaultScaleMode,
     viewportWidth: viewportSize.width,
     viewportHeight: viewportSize.height,
     stageWidth: stageSize.width,
     stageHeight: stageSize.height
   });
+
+  useEffect(() => {
+    localStorage.setItem(DISPLAY_MODE_KEY, displayMode);
+  }, [displayMode]);
+
+  useEffect(() => {
+    localStorage.setItem(SCALE_MODE_KEY, defaultScaleMode);
+  }, [defaultScaleMode]);
 
   const selectedWeek = useMemo(() => {
     if (selectedWeekIndex === null) {
@@ -42,6 +111,15 @@ export function LifeCalendarCanvas({ calendar }: LifeCalendarCanvasProps) {
     }
     return calendar.weeks.find((week) => week.weekIndex === selectedWeekIndex) ?? null;
   }, [calendar.weeks, selectedWeekIndex]);
+
+  const hasAnyEvents = useMemo(() => calendar.weeks.some((week) => week.events.length > 0), [calendar.weeks]);
+  const upcomingCount = useMemo(() => {
+    const now = Date.now();
+    return calendar.weeks.reduce((total, week) => {
+      const upcomingInWeek = week.events.filter((event) => Number.isFinite(Date.parse(event.date)) && Date.parse(event.date) >= now).length;
+      return total + upcomingInWeek;
+    }, 0);
+  }, [calendar.weeks]);
 
   useEffect(() => {
     const updateViewport = () => {
@@ -110,49 +188,68 @@ export function LifeCalendarCanvas({ calendar }: LifeCalendarCanvasProps) {
     viewport.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [zoom.mode]);
 
-  useEffect(() => {
-    if (!legendAnchor) {
-      return;
-    }
-
-    const onPointerDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (!legendRef.current?.contains(target)) {
-        setLegendAnchor(null);
-      }
-    };
-
-    document.addEventListener("mousedown", onPointerDown);
-    return () => document.removeEventListener("mousedown", onPointerDown);
-  }, [legendAnchor]);
-
   const scaledStageWidth = stageSize.width * zoom.scale;
   const centerStage = scaledStageWidth < viewportSize.width && zoom.mode === "contain";
+  const effectiveMode = resolveCalendarDisplayMode(displayMode, viewportSize.width);
 
   return (
     <>
-      <div className="mx-auto min-h-screen w-full max-w-[var(--poster-max-width)] px-6 pb-10 pt-2 sm:px-9">
+      <div
+        className="pointer-events-none fixed left-0 right-0 top-0 z-[12] h-[var(--poster-fade-height)] bg-[rgba(18,23,29,0.62)] backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_38%,transparent_100%)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none fixed bottom-0 left-0 right-0 z-[12] h-[calc(var(--poster-fade-height)*0.55)] bg-[rgba(18,23,29,0.35)] [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto min-h-screen w-full max-w-[var(--poster-max-width)] px-[var(--poster-page-padding-x)] pb-10 pt-2 sm:px-9">
         <PosterTopRail
           profile={calendar.profile}
           completedWeeks={calendar.summary.completedWeeks}
           totalWeeks={calendar.summary.totalWeeks}
           currentAgeYears={calendar.summary.currentAgeYears}
+          upcomingCount={upcomingCount}
           mode={zoom.mode}
           onToggleMode={zoom.toggleMode}
           onToggleInfo={(anchor) => setLegendAnchor((current) => (current ? null : anchor))}
+          onQuickAdd={(anchor) => {
+            requestAnimationFrame(() => {
+              setQuickAddAnchor(anchor);
+              setQuickAddDefaultDate(new Date().toISOString());
+              setQuickAddContextLabel(`Today • ${new Date().toLocaleDateString()}`);
+            });
+            setQuickAddError(null);
+          }}
+          onOpenSettings={() => setSettingsOpen(true)}
+          showAddHint={!hasAnyEvents}
         />
 
         <main className={layoutMode === "horizontal" ? "grid grid-cols-[60%_40%] items-start" : "block"}>
           <CalendarViewport viewportRef={viewportRef} centerStage={centerStage}>
-            <CalendarStage scale={zoom.scale} contentRef={stageContentRef}>
+            <CalendarStage scale={zoom.scale} contentRef={stageContentRef} fitContent={effectiveMode !== "months"}>
               <LifeCalendarGrid
                 weeks={calendar.weeks}
                 currentWeekIndex={calendar.summary.currentWeekIndex}
                 currentAgeYears={calendar.summary.currentAgeYears}
-                selectedWeekIndex={selectedWeekIndex}
-                onSelectWeek={(weekIndex, anchor) => {
+                displayMode={displayMode}
+                effectiveMode={effectiveMode}
+                initialDisplayMode={displayMode}
+                showYearMarkers={calendar.settings.showYearMarkers}
+                showEventMarkers={calendar.settings.showEventIcons}
+                onDisplayModeChange={setDisplayMode}
+                onSelectWeek={(weekIndex, anchor, events) => {
                   setSelectedWeekIndex(weekIndex);
                   setSelectedAnchor(anchor);
+                  setSelectedEventsOverride(events ?? null);
+                }}
+                onSelectRowDate={(anchor) => {
+                  requestAnimationFrame(() => {
+                    setQuickAddAnchor({ x: anchor.x, y: anchor.y });
+                    setQuickAddDefaultDate(anchor.defaultDate);
+                    setQuickAddContextLabel(anchor.contextLabel);
+                  });
+                  setQuickAddError(null);
                 }}
               />
             </CalendarStage>
@@ -162,13 +259,75 @@ export function LifeCalendarCanvas({ calendar }: LifeCalendarCanvasProps) {
         </main>
       </div>
 
-      {legendAnchor ? (
-        <div ref={legendRef} className="fixed z-40" style={{ left: legendAnchor.x + 14, top: legendAnchor.y - 8 }}>
-          <CalendarLegend />
-        </div>
-      ) : null}
+      <PopoverSurface
+        open={Boolean(legendAnchor)}
+        anchor={legendAnchor}
+        width={276}
+        onClose={() => setLegendAnchor(null)}
+        ariaLabel="Calendar legend"
+        showArrow={false}
+      >
+        <CalendarLegend />
+      </PopoverSurface>
 
-      <WeekPopover week={selectedWeek} anchor={selectedAnchor} onClose={() => setSelectedAnchor(null)} />
+      <WeekPopover
+        week={selectedWeek}
+        eventsOverride={selectedEventsOverride}
+        anchor={selectedAnchor}
+        onClose={() => {
+          setSelectedAnchor(null);
+          setSelectedEventsOverride(null);
+        }}
+        onCreateEvent={onCreateEvent}
+        onUpdateEvent={onUpdateEvent}
+        onDeleteEvent={onDeleteEvent}
+      />
+
+      <EventQuickAddPopover
+        open={Boolean(quickAddAnchor)}
+        anchor={quickAddAnchor}
+        defaultDate={quickAddDefaultDate ?? undefined}
+        contextLabel={quickAddContextLabel ?? undefined}
+        saving={quickAddSaving}
+        error={quickAddError}
+        onClose={() => {
+          setQuickAddAnchor(null);
+          setQuickAddDefaultDate(null);
+          setQuickAddContextLabel(null);
+        }}
+        onCreate={async (input) => {
+          setQuickAddSaving(true);
+          setQuickAddError(null);
+          try {
+            await onCreateEvent(input);
+          } catch (err) {
+            setQuickAddError(err instanceof Error ? err.message : "Unable to save event");
+            throw err;
+          } finally {
+            setQuickAddSaving(false);
+          }
+        }}
+      />
+
+      <SettingsModal
+        open={settingsOpen}
+        profile={calendar.profile}
+        settings={calendar.settings}
+        displayMode={displayMode}
+        scaleMode={defaultScaleMode}
+        onClose={() => setSettingsOpen(false)}
+        onReload={onReload}
+        onSave={async ({ profile, view }) => {
+          await onUpdateProfile(profile);
+          await onUpdateSettings({
+            showYearMarkers: view.showYearMarkers,
+            showEventIcons: view.showEventMarkers
+          });
+          setDisplayMode(view.displayMode);
+          setDefaultScaleMode(view.scaleMode);
+          zoom.setMode(view.scaleMode);
+        }}
+      />
     </>
   );
 }

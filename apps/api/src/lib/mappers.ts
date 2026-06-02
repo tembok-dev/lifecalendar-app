@@ -33,6 +33,8 @@ export function toEvent(model: {
   colorKey: string;
   isPrivate: boolean;
   showOnExport: boolean;
+  isRecurring: boolean;
+  recurrenceType: string | null;
   createdAt: Date;
   updatedAt: Date;
 }): WithDateStrings<LifeEvent> {
@@ -42,6 +44,7 @@ export function toEvent(model: {
     emotionalTone: model.emotionalTone as LifeEvent["emotionalTone"],
     iconKey: model.iconKey as LifeEvent["iconKey"],
     colorKey: model.colorKey as LifeEvent["colorKey"],
+    recurrenceType: model.recurrenceType as LifeEvent["recurrenceType"],
     date: model.date.toISOString(),
     createdAt: model.createdAt.toISOString(),
     updatedAt: model.updatedAt.toISOString()

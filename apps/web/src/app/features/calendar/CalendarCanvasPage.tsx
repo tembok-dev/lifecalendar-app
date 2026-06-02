@@ -2,17 +2,32 @@ import { EmptyCanvasState } from "./EmptyCanvasState";
 import { LifeCalendarCanvas } from "./LifeCalendarCanvas";
 import { LoadingState } from "./LoadingState";
 import { useCalendarData } from "../../hooks/useCalendarData";
+import { MinimalOnboardingOverlay } from "../onboarding/MinimalOnboardingOverlay";
 
 export function CalendarCanvasPage() {
-  const { loading, error, profile, calendar, reload } = useCalendarData();
+  const {
+    loading,
+    error,
+    profile,
+    calendar,
+    onboardingRequired,
+    creatingProfile,
+    createError,
+    createProfile,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    updateProfile,
+    updateSettings,
+    reload
+  } = useCalendarData();
 
   if (loading) {
     return <LoadingState />;
   }
 
-  if (error) {
+  if (error && !onboardingRequired) {
     return (
-      
       <div className="flex min-h-screen items-center justify-center px-6">
         <div className="max-w-md rounded-xl bg-surface/80 px-5 py-4 text-sm text-zinc-100 shadow-soft">
           <p className="font-medium">Calendar loading failed</p>
@@ -29,9 +44,28 @@ export function CalendarCanvasPage() {
     );
   }
 
-  if (!profile || !calendar) {
-    return <EmptyCanvasState />;
-  }
+  return (
+    <>
+      {profile && calendar ? (
+        <LifeCalendarCanvas
+          calendar={calendar}
+          onCreateEvent={createEvent}
+          onUpdateEvent={updateEvent}
+          onDeleteEvent={deleteEvent}
+          onUpdateProfile={updateProfile}
+          onUpdateSettings={updateSettings}
+          onReload={reload}
+        />
+      ) : (
+        <EmptyCanvasState />
+      )}
 
-  return <LifeCalendarCanvas calendar={calendar} />;
+      <MinimalOnboardingOverlay
+        open={onboardingRequired}
+        creating={creatingProfile}
+        error={createError}
+        onCreate={createProfile}
+      />
+    </>
+  );
 }

@@ -1,4 +1,5 @@
 import type { ColorKey, EmotionalTone, EventCategory, IconKey } from "./event-categories.js";
+import type { RecurrenceType } from "./recurrence.js";
 
 export interface Profile {
   id: string;
@@ -22,6 +23,8 @@ export interface LifeEvent {
   colorKey: ColorKey;
   isPrivate: boolean;
   showOnExport: boolean;
+  isRecurring: boolean;
+  recurrenceType: RecurrenceType | null;
   createdAt: string;
   updatedAt: string;
 }

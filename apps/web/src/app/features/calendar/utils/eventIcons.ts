@@ -2,6 +2,7 @@ import type { ColorKey, EventCategory, IconKey } from "@lifecalendar/shared";
 import {
   AirplaneTiltIcon,
   BabyIcon,
+  BabyCarriageIcon,
   BriefcaseIcon,
   CakeIcon,
   DotOutlineIcon,

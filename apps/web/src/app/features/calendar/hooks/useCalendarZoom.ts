@@ -41,6 +41,7 @@ export function useCalendarZoom(input: UseCalendarZoomInput) {
   return {
     mode,
     scale,
+    setMode,
     toggleMode: () => setMode((value) => (value === "fit-width" ? "contain" : "fit-width"))
   };
 }

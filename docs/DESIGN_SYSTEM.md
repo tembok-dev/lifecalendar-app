@@ -69,6 +69,10 @@ Support two intentional compositions. These are explicit product modes, not acci
 - Weeks flow horizontally.
 - Grid should be centered and balanced like printable artwork.
 - Week cells are small rounded squares.
+- Row-first behavior:
+- right-side event rail belongs to each year row.
+- compact icons by default; row hover/focus may expand icon + title list.
+- decade spacing and 4-week group rhythm must remain stable.
 
 ## Calendar Mapping Semantics
 - Visual grid is calendar-year aligned, not birthday-offset aligned.
@@ -118,6 +122,7 @@ Support two intentional compositions. These are explicit product modes, not acci
 - low opacity
 - subtle ring/glow
 - must remain visually future (not completed).
+- recurring anticipation markers should stay weaker than the active current week/month marker.
 
 ## Progress Rail Concept
 - Include a top life progress rail concept.
@@ -130,10 +135,44 @@ Support two intentional compositions. These are explicit product modes, not acci
 - Hover may gently lift/brighten cell.
 - Nearby context may dim subtly.
 - Week click opens tiny contextual popover.
+- Empty slots should prefer row-level interaction over individual click behavior.
+- Event slots can use stronger hover magnification and remain directly clickable.
+- Row click may estimate slot date for add-event flow.
+- Right floating rail may include a quiet `+` quick-add action.
 - No fixed selected-week dashboard panel.
 - Controls use quiet floating icons.
 - Icon nav may expand slightly on hover and reveal labels.
 - Use backdrop blur and soft ray-traced style shadows sparingly.
+
+## Overlay Surface Rules
+- Modal surface background: `rgba(18, 24, 29, 0.88)`.
+- Popover surface background: `rgba(16, 22, 27, 0.92)`.
+- Border: `1px solid rgba(220, 230, 240, 0.08)`.
+- Shadow: `0 24px 80px rgba(0,0,0,0.38)`.
+- Backdrop blur: max `16px`.
+- Radius:
+- modal `24px`
+- popover `18px`
+- floating buttons `999px` (or `14px` if contextual block button)
+- Padding:
+- modal `24px` desktop, `18px` compact
+- popover `14-16px`
+- Text scale:
+- title `18-22px`
+- body `13-14px`
+- helper `11-12px`
+
+## Overlay Motion + Placement
+- Motion uses only opacity + translateY.
+- Duration `140-180ms`, no bounce.
+- Popovers must anchor to trigger rect.
+- Popovers choose above/below using available viewport space.
+- Popovers clamp inside viewport with `16px` margin.
+- Popovers may show a small arrow pointer.
+- Tooltips use a small delay and must not steal focus.
+- Outside click closes popovers.
+- Escape closes modal/popover.
+- Modal opens centered and focus moves into modal when feasible.
 
 ## Zoom Architecture Guidance
 - Start with transform-scale architecture using `CalendarViewport` + `CalendarStage`.

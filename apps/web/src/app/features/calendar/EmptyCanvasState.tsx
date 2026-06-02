@@ -5,8 +5,8 @@ export function EmptyCanvasState() {
         <p className="text-[11px] uppercase tracking-[0.24em] text-muted">Life Calendar</p>
         <h1 className="mt-2 text-2xl font-medium text-zinc-100">Canvas Ready</h1>
         <p className="mt-3 max-w-2xl text-sm text-muted">
-          No profile found yet. Stage 5 will add a lightweight onboarding overlay to create the first profile
-          without leaving this canvas.
+          No profile found yet. A lightweight onboarding overlay will let you create your first profile
+          directly on this canvas.
         </p>
       </section>
     </div>

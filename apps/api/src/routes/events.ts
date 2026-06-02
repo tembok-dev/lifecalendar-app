@@ -5,7 +5,7 @@ import type {
   MutationEventResponse,
   PatchLifeEventInput
 } from "@lifecalendar/shared";
-import { deriveEventVisuals } from "@lifecalendar/shared";
+import { deriveEventVisuals, deriveRecurrenceDefaults } from "@lifecalendar/shared";
 import { prisma } from "../lib/prisma.js";
 import { toEvent } from "../lib/mappers.js";
 import {
@@ -32,6 +32,9 @@ export async function eventRoutes(app: FastifyInstance) {
     const { profileId } = parseOrThrow(profileIdParamsSchema, request.params);
     const input = parseOrThrow<CreateLifeEventInput>(createEventSchema, request.body);
     const defaults = deriveEventVisuals(input.category);
+    const recurrenceDefaults = deriveRecurrenceDefaults({ category: input.category, title: input.title, note: input.note ?? null });
+    const resolvedIsRecurring = input.isRecurring ?? recurrenceDefaults.isRecurring;
+    const resolvedRecurrenceType = resolvedIsRecurring ? input.recurrenceType ?? recurrenceDefaults.recurrenceType ?? "yearly" : null;
 
     const event = await prisma.lifeEvent.create({
       data: {
@@ -45,7 +48,9 @@ export async function eventRoutes(app: FastifyInstance) {
         iconKey: defaults.iconKey,
         colorKey: defaults.colorKey,
         isPrivate: input.isPrivate ?? false,
-        showOnExport: input.showOnExport ?? true
+        showOnExport: input.showOnExport ?? true,
+        isRecurring: resolvedIsRecurring,
+        recurrenceType: resolvedRecurrenceType
       }
     });
 
@@ -67,10 +72,29 @@ export async function eventRoutes(app: FastifyInstance) {
 
     if (input.category !== undefined) {
       const defaults = deriveEventVisuals(input.category);
+      const recurrenceDefaults = deriveRecurrenceDefaults({
+        category: input.category,
+        title: input.title,
+        note: input.note ?? null
+      });
       data.category = input.category;
       data.emotionalTone = defaults.emotionalTone;
       data.iconKey = defaults.iconKey;
       data.colorKey = defaults.colorKey;
+      if (input.isRecurring === undefined) {
+        data.isRecurring = recurrenceDefaults.isRecurring;
+      }
+      if (input.recurrenceType === undefined) {
+        data.recurrenceType = recurrenceDefaults.recurrenceType;
+      }
+    }
+
+    if (input.isRecurring !== undefined) {
+      data.isRecurring = input.isRecurring;
+      data.recurrenceType = input.isRecurring ? input.recurrenceType ?? "yearly" : null;
+    }
+    if (input.recurrenceType !== undefined) {
+      data.recurrenceType = input.recurrenceType;
     }
 
     const event = await prisma.lifeEvent.update({

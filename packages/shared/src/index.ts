@@ -8,6 +8,7 @@ import {
   type EventCategory,
   type IconKey
 } from "./domain/event-categories.js";
+import { deriveRecurrenceDefaults } from "./domain/recurrence.js";
 import type { AppSettings, LifeEvent, Profile } from "./domain/models.js";
 import {
   attachEventsToWeeks,
@@ -23,6 +24,9 @@ import {
   getWeekIndexFromDate,
   groupWeeksByLifeYear,
   resolveVisualSlotStatus,
+  buildRecurringPreviewEvents,
+  getYearlyOccurrenceDate,
+  isOccurrenceAfterToday,
   type BuiltCalendar,
   type CalendarSummary,
   type CalendarWeek
@@ -50,6 +54,7 @@ export {
   EVENT_CATEGORIES,
   EVENT_CATEGORY_DEFAULTS,
   deriveEventVisuals,
+  deriveRecurrenceDefaults,
   attachEventsToWeeks,
   buildLifeCalendar,
   buildCalendarSummary,
@@ -62,7 +67,10 @@ export {
   getWeekSlotRange,
   getWeekIndexFromDate,
   groupWeeksByLifeYear,
-  resolveVisualSlotStatus
+  resolveVisualSlotStatus,
+  buildRecurringPreviewEvents,
+  getYearlyOccurrenceDate,
+  isOccurrenceAfterToday
 };
 
 export type { AppSettings, LifeEvent, Profile };

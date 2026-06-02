@@ -45,3 +45,31 @@ Do not move to SVG unless export/precision/performance demands it.
 - Before full recurrence data model exists, anticipation styling is allowed as a visual stage.
 - Current-year upcoming recurring markers should use a softer anticipation style.
 - Full recurrence semantics remain TODO until recurrence fields are added.
+
+## D-012 Temporary Profile Loading Rule (Pre-Auth)
+- If profiles exist, app loads the latest created profile.
+- If no profiles exist, app shows in-canvas onboarding overlay.
+- No separate setup page or dashboard onboarding flow.
+
+## D-013 In-Canvas Settings Modal
+- Profile and calendar basics are edited through a calm overlay modal on top of the poster.
+- No separate settings page is introduced.
+- Settings changes apply via existing profile/settings APIs and refresh the calendar view.
+
+## D-014 Local View Defaults
+- Default display mode and scale mode are persisted as local UI preferences.
+- API-backed settings continue to own server-side calendar marker toggles.
+
+## D-015 Temporary Vertical Layout Sandbox Route
+- Added temporary dev-only `/layoutvertical` route for manual vertical poster composition refinement.
+- This sandbox is for low-risk layout tuning only and does not alter API/Prisma, event creation logic, or the main route behavior.
+
+## D-016 Vertical Sandbox Simplicity Rule
+- `/layoutvertical` is intentionally a simple, disposable visual proof-of-concept file.
+- Keep it easy to edit manually during composition exploration.
+- Do not enforce reusable component architecture in this sandbox until layout direction is approved.
+
+## D-017 Yearly Recurrence Foundation
+- Life events now support `isRecurring` and `recurrenceType` (`yearly` currently).
+- Category-based defaults are applied on create, and on category change when recurrence was not explicitly set by the user.
+- Current-year upcoming recurring occurrences are rendered as anticipation previews only (no completed-memory semantics).

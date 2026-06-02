@@ -1,53 +1,127 @@
-import { CalendarDays, Cog, Info, Scan } from "lucide-react";
+import { CalendarDays, Cog, Info, Plus, Scan } from "lucide-react";
 import type { CalendarScaleMode } from "../hooks/useCalendarZoom";
-import type { ReactNode } from "react";
+import { useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 
 interface PosterNavIconsProps {
   mode: CalendarScaleMode;
   onToggleMode: () => void;
   onToggleInfo: (anchor: { x: number; y: number }) => void;
+  onQuickAdd: (anchor: { x: number; y: number }) => void;
+  onOpenSettings: () => void;
+  showHint: boolean;
+  compact?: boolean;
 }
 
-function TopIcon({ icon }: { icon: ReactNode }) {
-  return <span className="flex h-8 w-8 items-center justify-center text-zinc-300/85">{icon}</span>;
-}
+export function PosterNavIcons({ mode, onToggleMode, onToggleInfo, onQuickAdd, onOpenSettings, showHint, compact = false }: PosterNavIconsProps) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [pointerX, setPointerX] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const activeIndex = hoveredIndex ?? focusedIndex;
 
-export function PosterNavIcons({ mode, onToggleMode, onToggleInfo }: PosterNavIconsProps) {
+  const items = useMemo(
+    () => [
+      {
+        key: "quick-add",
+        label: "Add event",
+        icon: <Plus size={18} strokeWidth={2} />,
+        onClick: (event: MouseEvent<HTMLButtonElement>) => onQuickAdd({ x: event.clientX, y: event.clientY })
+      },
+      {
+        key: "legend",
+        label: "Legend",
+        icon: <Info size={18} strokeWidth={2} />,
+        onClick: (event: MouseEvent<HTMLButtonElement>) => onToggleInfo({ x: event.clientX, y: event.clientY })
+      },
+      {
+        key: "mode",
+        label: mode === "fit-width" ? "Fit width" : "Contain",
+        icon: mode === "fit-width" ? <CalendarDays size={18} strokeWidth={2} /> : <Scan size={18} strokeWidth={2} />,
+        onClick: () => onToggleMode()
+      },
+      {
+        key: "settings",
+        label: "Settings",
+        icon: <Cog size={18} strokeWidth={2} />,
+        onClick: () => onOpenSettings()
+      }
+    ],
+    [mode, onOpenSettings, onQuickAdd, onToggleInfo, onToggleMode]
+  );
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      setFocusedIndex(null);
+    }
+  };
+
   return (
-    <>
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">
-        <button
-          type="button"
-          onClick={(event) => onToggleInfo({ x: event.clientX, y: event.clientY })}
-          className="group relative h-7 w-7 rounded-full bg-surface/45 text-zinc-300/80 backdrop-blur transition hover:text-zinc-100"
-          aria-label="Toggle legend"
-        >
-          <Info size={13} className="mx-auto" />
-          <span className="pointer-events-none absolute right-9 top-1/2 -translate-y-1/2 whitespace-nowrap text-[10px] text-zinc-200/80 opacity-0 transition group-hover:opacity-100">
-            Legend
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={onToggleMode}
-          className={[
-            "group relative h-7 w-7 rounded-full backdrop-blur transition hover:text-zinc-100",
-            mode === "fit-width" ? "bg-surface/58 text-zinc-100" : "bg-surface/45 text-zinc-300/80"
-          ].join(" ")}
-          aria-label="Toggle scale mode"
-        >
-          {mode === "fit-width" ? <CalendarDays size={13} className="mx-auto" /> : <Scan size={13} className="mx-auto" />}
-          <span className="pointer-events-none absolute right-9 top-1/2 -translate-y-1/2 whitespace-nowrap text-[10px] text-zinc-200/80 opacity-0 transition group-hover:opacity-100">
-            {mode === "fit-width" ? "Fit Width" : "Contain"}
-          </span>
-        </button>
+    <div
+      ref={containerRef}
+      className={compact ? "group mx-auto flex w-full items-center justify-center gap-3 px-2 py-1.5 transition-all duration-300" : "group mx-auto flex w-full items-center justify-center gap-4 px-3 py-2 transition-all duration-300"}
+      onMouseMove={(event) => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) {
+          return;
+        }
+        const localX = event.clientX - rect.left;
+        setPointerX(localX);
+        let nearest = 0;
+        let minDist = Number.POSITIVE_INFINITY;
+        buttonRefs.current.forEach((button, index) => {
+          if (!button) {
+            return;
+          }
+          const center = button.offsetLeft + button.offsetWidth / 2;
+          const dist = Math.abs(center - localX);
+          if (dist < minDist) {
+            minDist = dist;
+            nearest = index;
+          }
+        });
+        setHoveredIndex(nearest);
+      }}
+      onMouseLeave={() => {
+        setHoveredIndex(null);
+        setPointerX(null);
+      }}
+      onKeyDown={handleKeyDown}
+    >
+      {items.map((item, index) => {
+        const distance = activeIndex === null ? 3 : Math.abs(index - activeIndex);
+        const scale = activeIndex === null ? 0.92 : distance === 0 ? 1.38 : distance === 1 ? 1.12 : 0.86;
+        const opacity = activeIndex === null ? 0.7 : distance === 0 ? 1 : distance === 1 ? 0.84 : 0.52;
+        const glow = distance === 0 ? "drop-shadow(0_0_14px_rgba(231,238,245,0.22))" : "none";
+        const button = buttonRefs.current[index];
+        const center = button ? button.offsetLeft + button.offsetWidth / 2 : null;
+        const delta = pointerX !== null && center !== null ? pointerX - center : 0;
+        const range = 120;
+        const strength = Math.max(0, 1 - Math.abs(delta) / range);
+        const pullX = pointerX === null ? 0 : (delta / range) * 8 * strength;
+        return (
+          <button
+            key={item.key}
+            ref={(element) => {
+              buttonRefs.current[index] = element;
+            }}
+            type="button"
+            aria-label={item.label}
+            title={item.key === "quick-add" && showHint ? "Add memories by clicking a week or using +" : item.label}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[rgba(227,235,244,0.62)] transition-[color,transform,opacity,filter] duration-200 hover:text-[rgba(244,248,251,0.98)] focus-visible:text-[rgba(244,248,251,0.98)] focus-visible:outline-none"
+            style={{ transform: `translateX(${pullX}px) translateY(${distance === 0 ? "-2px" : "0px"}) scale(${scale})`, opacity, filter: glow }}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onFocus={() => setFocusedIndex(index)}
+            onBlur={() => setFocusedIndex(null)}
+            onClick={item.onClick}
+          >
+            {item.icon}
+          </button>
+        );
+      })}
+      <div className="sr-only" aria-live="polite">
+        {showHint ? "Add memories by clicking a week or using plus." : ""}
       </div>
-
-      <div className="flex items-center gap-2">
-        <TopIcon icon={<CalendarDays size={16} strokeWidth={1.9} />} />
-        <TopIcon icon={<Cog size={16} strokeWidth={1.9} />} />
-      </div>
-    </>
+    </div>
   );
 }

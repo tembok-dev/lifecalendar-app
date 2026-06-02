@@ -1,5 +1,6 @@
 import type { LifeEvent, Profile } from "../domain/models.js";
 import { attachEventsToWeeks } from "./events.js";
+import { buildRecurringPreviewEvents, getYearlyOccurrenceDate, isOccurrenceAfterToday } from "./recurrence.js";
 import { groupWeeksByLifeYear } from "./grouping.js";
 import {
   getCalendarYearMonthSlot,
@@ -43,7 +44,10 @@ export {
   getWeekSlotRange,
   getWeekIndexFromDate,
   groupWeeksByLifeYear,
-  resolveVisualSlotStatus
+  resolveVisualSlotStatus,
+  buildRecurringPreviewEvents,
+  getYearlyOccurrenceDate,
+  isOccurrenceAfterToday
 };
 
 export type { BuildCalendarInput, BuiltCalendar, CalendarSummary, CalendarWeek, LifeWeekRange, LifeEvent, Profile };

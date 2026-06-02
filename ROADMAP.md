@@ -29,10 +29,21 @@
 - Enforce poster compositions (vertical/horizontal)
 - Introduce zoom-ready viewport structure
 
-## Phase 5 - Onboarding Overlay
+## Phase 5 - Onboarding Overlay (Done)
 - In-canvas name + birthdate capture
 - Create first profile without leaving canvas
+- First-run profile detection and existing-profile auto-load
+
+## Phase 5.5 - Contextual Event Popover (Done)
+- Click week/month cell to open contextual popover
+- Add/edit/delete lightweight life events inline
+- Keep poster visible; no event manager page
 
 ## Phase 6 - Event Interaction Layer
 - Lightweight week-level event interactions
 - Recurring event rendering refinement
+
+## Phase 6.5 - Settings Modal (Done)
+- In-canvas calm settings modal (no separate page)
+- Profile basics editing (name, birthdate, expected lifespan)
+- Calendar view preferences and marker toggles

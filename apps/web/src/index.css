@@ -16,11 +16,40 @@
   --week-cell-gap: 6px;
   --week-group-gap: 12px;
   --year-label-width: 66px;
+  --calendar-year-label-width: 66px;
   --calendar-grid-width: calc((52 * var(--week-cell-size)) + (51 * var(--week-cell-gap)));
   --calendar-stage-width: calc(var(--year-label-width) + var(--calendar-grid-width) + 40px);
 
   --poster-max-width: 1520px;
+  --poster-page-padding-x: 24px;
+  --poster-top-dock-width: 300px;
+  --poster-top-dock-offset: 12px;
+  --poster-fade-height: 176px;
+  --poster-identity-height: 92px;
+  --calendar-axis-x: 64px;
+  --calendar-axis-y: 60px;
+  --calendar-event-column-width: 136px;
+  --calendar-event-rail-width: 136px;
+  --calendar-stage-gap: 14px;
+  --calendar-cell-gap: 2px;
+  --calendar-week-group-gap: 12px;
+  --calendar-decade-gap: 8px;
+  --calendar-row-expanded-gap: 3px;
+  --calendar-event-hover-scale: 2.6;
+  --calendar-month-cell-height: 18px;
+  --calendar-month-cell-gap: 6px;
+  --calendar-month-group-gap: 18px;
+  --calendar-add-gap-width: 28px;
+  --calendar-event-rail-width: 136px;
+  --calendar-current-color: 125 249 230;
+  --calendar-current-glow: rgba(125, 249, 230, 0.32);
+  --calendar-current-progress-opacity: 0.32;
   --poster-top-space: 58px;
+  --poster-page-padding: 28px;
+  --poster-top-rail-height: 64px;
+  --poster-grid-max-width: 1180px;
+  --poster-grid-min-height: 640px;
+  --poster-breathing-space: 120px;
 
   --week-past-bg: #d9e0e7;
   --week-past-border: transparent;
@@ -77,8 +106,8 @@ body {
 }
 
 .week-cell--future-current-year {
-  border-color: var(--week-future-current-year-border);
-  background: transparent;
+  border-color: rgba(125, 249, 230, 0.22);
+  background: rgba(125, 249, 230, 0.035);
 }
 
 .week-cell--future {
@@ -94,6 +123,78 @@ body {
 
 .week-cell--anticipation {
   box-shadow:
-    0 0 0 1px rgba(230, 235, 242, 0.12),
-    0 0 8px rgba(146, 168, 198, 0.18);
+    0 0 0 1px rgba(230, 235, 242, 0.08),
+    0 0 6px rgba(146, 168, 198, 0.12);
+}
+
+.week-cell--recurring-preview {
+  border-color: rgba(125, 249, 230, 0.2);
+  background: rgba(125, 249, 230, 0.06);
+  box-shadow: inset 0 0 10px rgba(125, 249, 230, 0.08);
+}
+
+.week-cell--current-strong {
+  border-color: rgba(var(--calendar-current-color), 0.88);
+  box-shadow:
+    0 0 0 1px rgba(var(--calendar-current-color), 0.22),
+    0 0 10px var(--calendar-current-glow);
+}
+
+.calendar-year-row--current {
+  position: relative;
+  isolation: isolate;
+}
+
+.calendar-year-row--current::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -8px -18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(125, 249, 230, 0.2), transparent 34%),
+    linear-gradient(90deg, rgba(125, 249, 230, 0.12), rgba(125, 249, 230, 0.05), transparent 78%);
+  box-shadow: 0 0 42px rgba(125, 249, 230, 0.1);
+  pointer-events: none;
+  opacity: 0.25;
+}
+
+.calendar-year-row--current > * {
+  position: relative;
+  z-index: 1;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.calendar-current-age-label {
+  color: rgb(165, 255, 244);
+  font-weight: 700;
+}
+
+.calendar-current-age-dot {
+  height: 4px;
+  width: 4px;
+  border-radius: 999px;
+  background: rgb(125, 249, 230);
+  box-shadow: 0 0 12px rgba(125, 249, 230, 0.85);
+}
+
+.week-cell--current {
+  background: rgba(125, 249, 230, 0.78);
+  border-color: rgba(220, 255, 250, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(220, 255, 250, 0.55),
+    0 0 18px rgba(125, 249, 230, 0.55),
+    0 0 36px rgba(125, 249, 230, 0.22);
+}
+
+[data-event-cell="true"] {
+  transform-origin: center;
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease;
+}
+
+[data-event-cell="true"]:hover,
+[data-event-cell="true"]:focus-visible {
+  transform: scale(var(--calendar-event-hover-scale));
+  filter: brightness(1.08);
 }

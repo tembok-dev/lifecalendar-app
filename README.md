@@ -1,11 +1,12 @@
 # Life Calendar App
 
-Stage: `v0.4.3A` design-doc consolidation before Stage 4.3B visual implementation.
+Stage: `v0.5.0` minimal onboarding overlay.
 
 ## Current Scope
 - Working calendar engine and API-backed canvas flow
-- Consolidated design governance with one UI/UX source of truth
-- No component refactor in this stage
+- Poster-first canvas UI
+- First-run onboarding overlay for profile creation (name + birthdate)
+- Existing profile auto-load (latest profile for now)
 
 ## Documentation Authority
 - UI/UX source of truth: `docs/DESIGN_SYSTEM.md`
