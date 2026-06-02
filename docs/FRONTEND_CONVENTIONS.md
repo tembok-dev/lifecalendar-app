@@ -35,19 +35,37 @@ Visual direction lives in `docs/DESIGN_SYSTEM.md`.
 ## Overlay Primitives (Mandatory)
 - Use shared primitives for interaction surfaces:
 - `ModalSurface`
+- `ModalHeader`
+- `ModalSection`
+- `ModalField`
+- `ModalFooter`
+- `ModalAccentOrb`
 - `PopoverSurface`
 - `TooltipSurface`
 - `OverlayBackdrop`
 - `FloatingRailButton`
-- `Field`
+- `FloatingInput`
+- `FloatingTextarea`
+- `FloatingSelect`
+- `ToggleSwitch`
+- `IconChoiceChip`
+- `ExpandableSection`
 - `InlineError`
+- `TabRail`
 - Feature components must not implement ad-hoc popover positioning logic.
 - Anchor, clamp, outside-click close, and Escape-close behavior should come from primitives.
 - Overlay state should stay at canvas/grid level when possible to avoid per-cell re-render overhead.
+- All modals must use `ModalSurface`.
+- Inputs inside modals should use `FloatingInput` / `FloatingTextarea` / `FloatingSelect` where practical.
+- Category choices in overlay forms should use `IconChoiceChip` via the shared picker.
+- Modal tab switching should use the shared `TabRail` when a modal has multiple content groups.
+- Destructive event actions must only appear inside the event edit modal and require confirmation.
+- Modal/list event rows should use the shared `EventListItem` instead of ad-hoc bordered boxes.
 
 ## Icons
 - Use `lucide-react` for UI/navigation/action icons.
 - Use `@phosphor-icons/react` for emotional event glyphs.
+- UI/action affordances should use `lucide-react` wherever practical, including destructive actions such as delete.
 - Event icon mapping must be centralized in one resolver utility.
 - Do not import event glyphs ad hoc in random components.
 - `WeekCell` should consume resolved event icon/visual metadata where possible.

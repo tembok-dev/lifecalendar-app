@@ -1,8 +1,12 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { CalendarDays, ChevronDown, FileText, PenLine, Tag } from "lucide-react";
 import { deriveRecurrenceDefaults, type EventCategory, type LifeEvent } from "@lifecalendar/shared";
 import { EventCategoryPicker } from "./EventCategoryPicker";
-import { Field } from "../../ui/primitives/Field";
+import { ExpandableSection } from "../../ui/primitives/ExpandableSection";
+import { FloatingInput } from "../../ui/primitives/FloatingInput";
+import { FloatingTextarea } from "../../ui/primitives/FloatingTextarea";
 import { InlineError } from "../../ui/primitives/InlineError";
+import { ToggleSwitch } from "../../ui/primitives/ToggleSwitch";
 
 interface EventMiniFormProps {
   mode: "create" | "edit";
@@ -11,6 +15,8 @@ interface EventMiniFormProps {
   saving: boolean;
   error: string | null;
   onCancel: () => void;
+  formId?: string;
+  showFooter?: boolean;
   onSubmit: (input: {
     category: EventCategory;
     title: string;
@@ -23,7 +29,7 @@ interface EventMiniFormProps {
   }) => Promise<void> | void;
 }
 
-export function EventMiniForm({ mode, defaultDate, initialEvent, saving, error, onCancel, onSubmit }: EventMiniFormProps) {
+export function EventMiniForm({ mode, defaultDate, initialEvent, saving, error, onCancel, onSubmit, formId, showFooter = true }: EventMiniFormProps) {
   const [category, setCategory] = useState<EventCategory>(initialEvent?.category ?? "memory");
   const [title, setTitle] = useState(initialEvent?.title ?? "");
   const [date, setDate] = useState(toDateInput(initialEvent?.date ?? defaultDate));
@@ -33,7 +39,6 @@ export function EventMiniForm({ mode, defaultDate, initialEvent, saving, error, 
   const [isRecurring, setIsRecurring] = useState(initialEvent?.isRecurring ?? deriveRecurrenceDefaults({ category: initialEvent?.category ?? "memory", title: initialEvent?.title, note: initialEvent?.note }).isRecurring);
   const [recurrenceTouched, setRecurrenceTouched] = useState(mode === "edit");
 
-  const heading = useMemo(() => (mode === "create" ? "Add memory" : "Edit memory"), [mode]);
   const updateCategory = (next: EventCategory) => {
     setCategory(next);
     if (recurrenceTouched) {
@@ -45,7 +50,8 @@ export function EventMiniForm({ mode, defaultDate, initialEvent, saving, error, 
 
   return (
     <form
-      className="mt-2"
+      id={formId}
+      className="min-h-0"
       onSubmit={(event) => {
         event.preventDefault();
         void onSubmit({
@@ -60,74 +66,74 @@ export function EventMiniForm({ mode, defaultDate, initialEvent, saving, error, 
         });
       }}
     >
-      <p className="text-xs font-medium text-zinc-200/95">{heading}</p>
-
-      <Field label="Title">
-        <input
+      <div className="grid gap-3">
+        <FloatingInput
+          className="h-12"
+          leadingIcon={<PenLine size={16} />}
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          className="w-full rounded-md border border-line/60 bg-zinc-900/35 px-2 py-1.5 text-[12px] text-zinc-100 outline-none focus:border-zinc-300/65"
-          placeholder="A meaningful moment"
+          placeholder="What happened?"
         />
-      </Field>
 
-      <Field label="Date">
-        <input
-          type="date"
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          className="w-full rounded-md border border-line/60 bg-zinc-900/35 px-2 py-1.5 text-[12px] text-zinc-100 outline-none focus:border-zinc-300/65"
-        />
-      </Field>
-
-      <label className="mt-2 block text-[11px] text-zinc-300/82">Category</label>
-      <EventCategoryPicker value={category} onChange={updateCategory} />
-
-      <Field label="Note (optional)">
-        <textarea
-          value={note}
-          onChange={(event) => setNote(event.target.value)}
-          rows={2}
-          className="w-full resize-none rounded-md border border-line/60 bg-zinc-900/35 px-2 py-1.5 text-[12px] text-zinc-100 outline-none focus:border-zinc-300/65"
-        />
-      </Field>
-
-      <div className="mt-2 flex items-center gap-3 text-[11px] text-zinc-300/85">
-        <label className="flex items-center gap-1.5">
-          <input type="checkbox" checked={showOnExport} onChange={(event) => setShowOnExport(event.target.checked)} />
-          Export
-        </label>
-        <label className="flex items-center gap-1.5">
-          <input type="checkbox" checked={isPrivate} onChange={(event) => setIsPrivate(event.target.checked)} />
-          Private
-        </label>
-        <label className="flex items-center gap-1.5">
-          <input
-            type="checkbox"
-            checked={isRecurring}
-            onChange={(event) => {
-              setRecurrenceTouched(true);
-              setIsRecurring(event.target.checked);
-            }}
+        <div className="grid gap-3">
+          <FloatingInput
+            type="date"
+            leadingIcon={<CalendarDays size={16} />}
+            trailingIcon={<ChevronDown size={16} />}
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
+            className="h-11"
           />
-          Repeat yearly
-        </label>
+          <EventCategoryPicker value={category} onChange={updateCategory} />
+        </div>
+
+        <ExpandableSection title="Add note (optional)" defaultOpen={Boolean(note)} compactLabel="Expand" icon={<FileText size={14} />}>
+          <FloatingTextarea
+            leadingIcon={<FileText size={16} />}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            rows={3}
+            className="max-h-[180px]"
+            placeholder="Anything worth remembering..."
+          />
+        </ExpandableSection>
+
+        <ExpandableSection title="Preferences" defaultOpen={false} compactLabel="Advanced" icon={<Tag size={14} />}>
+          <div className="flex flex-wrap gap-4">
+            <ToggleSwitch checked={showOnExport} onChange={setShowOnExport} label="Export" />
+            <ToggleSwitch checked={isPrivate} onChange={setIsPrivate} label="Private" />
+            <ToggleSwitch
+              checked={isRecurring}
+              onChange={(checked) => {
+                setRecurrenceTouched(true);
+                setIsRecurring(checked);
+              }}
+              label="Repeat yearly"
+            />
+          </div>
+        </ExpandableSection>
+
+        <InlineError message={error} />
       </div>
 
-      <InlineError message={error} />
-
-      <div className="mt-3 flex items-center gap-2">
-        <button type="button" onClick={onCancel} className="rounded-full border border-line/60 px-2.5 py-1 text-[11px] text-zinc-200/86">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="rounded-full bg-zinc-100/95 px-3 py-1 text-[11px] font-medium text-zinc-900 disabled:opacity-65"
-        >
-          {saving ? "Saving..." : "Save"}
-        </button>
-      </div>
+      {showFooter ? (
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--border-soft)] pt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-full bg-[linear-gradient(135deg,rgba(112,232,224,0.94),rgba(83,185,205,0.9))] px-5 py-2 text-[12px] font-medium text-slate-950 disabled:opacity-65"
+          >
+            {saving ? "Saving..." : "Save memory"}
+          </button>
+        </div>
+      ) : null}
     </form>
   );
 }

@@ -1,15 +1,13 @@
-﻿import type { LifeEvent } from "@lifecalendar/shared";
-import { EVENT_CATEGORY_LABEL } from "../utils/eventIcons";
+import type { LifeEvent } from "@lifecalendar/shared";
+import { EventListItem } from "./EventListItem";
 
 interface EventListProps {
   events: LifeEvent[];
-  deletingEventId: string | null;
   onAdd: () => void;
   onEdit: (event: LifeEvent) => void;
-  onDelete: (event: LifeEvent) => void;
 }
 
-export function EventList({ events, deletingEventId, onAdd, onEdit, onDelete }: EventListProps) {
+export function EventList({ events, onAdd, onEdit }: EventListProps) {
   if (events.length === 0) {
     return (
       <div className="mt-2">
@@ -28,25 +26,7 @@ export function EventList({ events, deletingEventId, onAdd, onEdit, onDelete }: 
   return (
     <div className="mt-2 space-y-1.5">
       {events.map((event) => (
-        <div key={event.id} className="rounded-md border border-line/55 bg-zinc-900/22 px-2 py-1.5">
-          <p className="text-[11px] font-medium text-zinc-100">{event.title}</p>
-          <p className="mt-0.5 text-[10px] text-zinc-300/72">
-            {EVENT_CATEGORY_LABEL[event.category]} • {new Date(event.date).toISOString().slice(0, 10)}
-          </p>
-          <div className="mt-1.5 flex items-center gap-2">
-            <button type="button" onClick={() => onEdit(event)} className="text-[10px] text-zinc-200/88">
-              Edit
-            </button>
-            <button
-              type="button"
-              disabled={deletingEventId === event.id}
-              onClick={() => onDelete(event)}
-              className="text-[10px] text-rose-300 disabled:opacity-55"
-            >
-              {deletingEventId === event.id ? "Deleting..." : "Delete"}
-            </button>
-          </div>
-        </div>
+        <EventListItem key={event.id} event={event} onClick={onEdit} />
       ))}
 
       <button

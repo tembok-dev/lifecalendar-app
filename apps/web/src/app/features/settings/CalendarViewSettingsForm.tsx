@@ -1,6 +1,9 @@
+import { Eye, LayoutGrid, Scaling } from "lucide-react";
 import type { CalendarScaleMode } from "../calendar/hooks/useCalendarZoom";
 import type { CalendarDisplayMode } from "../calendar/LifeCalendarGrid";
-import { Field } from "../ui/primitives/Field";
+import { FloatingSelect } from "../ui/primitives/FloatingSelect";
+import { ModalField } from "../ui/primitives/ModalField";
+import { ToggleSwitch } from "../ui/primitives/ToggleSwitch";
 
 interface CalendarViewSettingsFormProps {
   displayMode: CalendarDisplayMode;
@@ -15,50 +18,46 @@ interface CalendarViewSettingsFormProps {
 
 export function CalendarViewSettingsForm(props: CalendarViewSettingsFormProps) {
   return (
-    <section className="space-y-2">
-      <p className="text-xs font-medium text-zinc-100">Calendar view</p>
-
-      <Field label="Default display mode">
-        <select
+    <div className="grid gap-3">
+      <div className="space-y-1">
+        <p className="text-[13px] font-medium text-[var(--text-primary)]">View</p>
+        <p className="text-[11px] text-[var(--text-muted)]">Quiet defaults for how the poster composes itself.</p>
+      </div>
+      <ModalField label="Default display mode">
+        <FloatingSelect
+          leadingIcon={<LayoutGrid size={16} />}
           value={props.displayMode}
           onChange={(event) => props.onDisplayModeChange(event.target.value as CalendarDisplayMode)}
-          className="w-full rounded-md border border-line/60 bg-zinc-900/35 px-2.5 py-1.5 text-[12px] text-zinc-100 outline-none focus:border-zinc-300/65"
+          className="h-[44px]"
         >
           <option value="auto">Auto</option>
           <option value="weeks">Weeks</option>
           <option value="months">Months</option>
-        </select>
-      </Field>
+        </FloatingSelect>
+      </ModalField>
 
-      <Field label="Default scale mode">
-        <select
+      <ModalField label="Default scale mode">
+        <FloatingSelect
+          leadingIcon={<Scaling size={16} />}
           value={props.scaleMode}
           onChange={(event) => props.onScaleModeChange(event.target.value as CalendarScaleMode)}
-          className="w-full rounded-md border border-line/60 bg-zinc-900/35 px-2.5 py-1.5 text-[12px] text-zinc-100 outline-none focus:border-zinc-300/65"
+          className="h-[44px]"
         >
           <option value="fit-width">Fit width</option>
           <option value="contain">Contain</option>
-        </select>
-      </Field>
+        </FloatingSelect>
+      </ModalField>
 
-      <div className="flex items-center gap-3 text-[11px] text-zinc-300/85">
-        <label className="flex items-center gap-1.5">
-          <input
-            type="checkbox"
-            checked={props.showYearMarkers}
-            onChange={(event) => props.onShowYearMarkersChange(event.target.checked)}
-          />
-          Show year markers
-        </label>
-        <label className="flex items-center gap-1.5">
-          <input
-            type="checkbox"
-            checked={props.showEventMarkers}
-            onChange={(event) => props.onShowEventMarkersChange(event.target.checked)}
-          />
-          Show event markers
-        </label>
+      <div className="space-y-2 border-t border-[var(--border-soft)] pt-3">
+        <div className="flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
+          <Eye size={14} />
+          <span>Markers</span>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          <ToggleSwitch checked={props.showYearMarkers} onChange={props.onShowYearMarkersChange} label="Show year markers" />
+          <ToggleSwitch checked={props.showEventMarkers} onChange={props.onShowEventMarkersChange} label="Show event markers" />
+        </div>
       </div>
-    </section>
+    </div>
   );
 }

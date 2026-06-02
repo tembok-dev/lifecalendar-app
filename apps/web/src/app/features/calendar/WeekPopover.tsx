@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CalendarWeek, LifeEvent } from "@lifecalendar/shared";
 import { EventList } from "./events/EventList";
-import { EventMiniForm } from "./events/EventMiniForm";
 import { InlineError } from "../ui/primitives/InlineError";
 import { PopoverSurface } from "../ui/primitives/PopoverSurface";
 
@@ -10,46 +9,14 @@ interface WeekPopoverProps {
   eventsOverride?: LifeEvent[] | null;
   anchor: { x: number; y: number; defaultDate: string; contextLabel: string } | null;
   onClose: () => void;
-  onCreateEvent: (input: {
-    category: LifeEvent["category"];
-    title: string;
-    date: string;
-    note: string | null;
-    isPrivate: boolean;
-    showOnExport: boolean;
-    isRecurring: boolean;
-    recurrenceType: "yearly" | null;
-  }) => Promise<void>;
-  onUpdateEvent: (
-    eventId: string,
-    input: {
-      category?: LifeEvent["category"];
-      title?: string;
-      date?: string;
-      note?: string | null;
-      isPrivate?: boolean;
-      showOnExport?: boolean;
-      isRecurring?: boolean;
-      recurrenceType?: "yearly" | null;
-    }
-  ) => Promise<void>;
-  onDeleteEvent: (eventId: string) => Promise<void>;
+  onRequestCreate: (input: { defaultDate: string; contextLabel: string }) => void;
+  onRequestEdit: (event: LifeEvent, contextLabel: string) => void;
 }
 
-type PopoverMode = "list" | "create" | "edit";
-
-export function WeekPopover({ week, eventsOverride, anchor, onClose, onCreateEvent, onUpdateEvent, onDeleteEvent }: WeekPopoverProps) {
-  const [mode, setMode] = useState<PopoverMode>("list");
-  const [editingEvent, setEditingEvent] = useState<LifeEvent | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+export function WeekPopover({ week, eventsOverride, anchor, onClose, onRequestCreate, onRequestEdit }: WeekPopoverProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setMode("list");
-    setEditingEvent(null);
-    setSaving(false);
-    setDeletingEventId(null);
     setError(null);
   }, [week?.weekIndex, anchor?.x, anchor?.y]);
 
@@ -74,65 +41,21 @@ export function WeekPopover({ week, eventsOverride, anchor, onClose, onCreateEve
         {new Date(anchor.defaultDate).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}
       </p>
 
-      {mode === "list" ? (
-        <EventList
-          events={sortedEvents}
-          deletingEventId={deletingEventId}
-          onAdd={() => {
-            setMode("create");
-            setEditingEvent(null);
-            setError(null);
-          }}
-          onEdit={(event) => {
-            setMode("edit");
-            setEditingEvent(event);
-            setError(null);
-          }}
-          onDelete={async (event) => {
-            setDeletingEventId(event.id);
-            setError(null);
-            try {
-              await onDeleteEvent(event.id);
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Delete failed");
-            } finally {
-              setDeletingEventId(null);
-            }
-          }}
-        />
-      ) : (
-        <EventMiniForm
-          mode={mode === "create" ? "create" : "edit"}
-          defaultDate={anchor.defaultDate}
-          initialEvent={editingEvent ?? undefined}
-          saving={saving}
-          error={error}
-          onCancel={() => {
-            setMode("list");
-            setEditingEvent(null);
-            setError(null);
-          }}
-          onSubmit={async (input) => {
-            setSaving(true);
-            setError(null);
-            try {
-              if (mode === "edit" && editingEvent) {
-                await onUpdateEvent(editingEvent.id, input);
-              } else {
-                await onCreateEvent(input);
-              }
-              setMode("list");
-              setEditingEvent(null);
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Save failed");
-            } finally {
-              setSaving(false);
-            }
-          }}
-        />
-      )}
+      <EventList
+        events={sortedEvents}
+        onAdd={() => {
+          setError(null);
+          onClose();
+          onRequestCreate({ defaultDate: anchor.defaultDate, contextLabel: anchor.contextLabel });
+        }}
+        onEdit={(event) => {
+          setError(null);
+          onClose();
+          onRequestEdit(event, anchor.contextLabel);
+        }}
+      />
 
-      {mode === "list" ? <InlineError message={error} /> : null}
+      <InlineError message={error} />
     </PopoverSurface>
   );
 }

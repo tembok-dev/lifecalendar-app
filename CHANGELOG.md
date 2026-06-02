@@ -1,5 +1,43 @@
 # Changelog
 
+## v0.7.3 - Event List Modal + Safe Actions
+- Added reusable `EventListItem` for modal/list event rows with icon, date, category, recurring marker, upcoming marker, and optional note preview.
+- Redesigned the global Events modal to use the floating modal shell plus `EventListItem` rows sorted newest first.
+- Removed direct delete actions from list surfaces, including the week popover event list.
+- Moved event deletion into the edit modal only, behind an explicit confirmation step.
+
+## v0.7.2 - Settings Modal Tabs
+- Redesigned the Settings modal into a compact tabbed floating surface with `View`, `Profile`, and `Data` tabs.
+- Removed the stacked oversized section-card layout and replaced it with one active tab panel at a time.
+- Added shared `TabRail` primitive for compact modal section switching.
+- Tightened Settings modal geometry to a smaller radius and `560px` max width with constrained internal scrolling.
+- Refined settings field groups to use the same floating field language as the add/edit memory modal.
+- Hid the modal body scrollbar chrome via the shared modal body wrapper while preserving scroll behavior.
+
+## v0.7.0B - Add Memory Modal Reduction Pass
+- Reduced add-memory modal back to a compact single-column flow with calmer spacing and constrained width.
+- Replaced oversized category cards with compact chips plus a `More` expander grid.
+- Moved note and preferences behind compact expandable sections so advanced fields are not visually dominant.
+- Shrunk toggle styling to quieter pill switches and removed the heavier save-button glow treatment.
+
+## v0.7.0 - Floating Surface Design System
+- Added semantic floating surface tokens for page, poster, modal, field, text, border, and accent layers.
+- Added reusable floating UI primitives:
+- `ModalHeader`
+- `ModalSection`
+- `ModalField`
+- `ModalFooter`
+- `ModalAccentOrb`
+- `FloatingInput`
+- `FloatingTextarea`
+- `FloatingSelect`
+- `ToggleSwitch`
+- `IconChoiceChip`
+- `ExpandableSection`
+- Upgraded `ModalSurface` to a stronger portal-based floating object with width variants and internal scrolling.
+- Refit the add-memory modal flow and settings modal onto the new floating surface primitives without changing save behavior.
+- Updated category picking to icon-first quick picks with expandable secondary choices.
+
 ## v0.6.5H - Portal Floating Popovers Outside Scaled Calendar
 - Portaled `PopoverSurface` to `document.body` so fixed-position popovers are no longer offset by scaled/transformed calendar ancestors.
 - Kept shared anchor-rect positioning helper and side-aware arrow rendering.

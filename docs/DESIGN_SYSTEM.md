@@ -174,6 +174,21 @@ Support two intentional compositions. These are explicit product modes, not acci
 - Escape closes modal/popover.
 - Modal opens centered and focus moves into modal when feasible.
 
+## Floating Surface System
+- Floating overlays should feel like deliberate objects above the poster, not flat black panels.
+- Use blue-black glass surfaces with a slightly brighter value than the poster background.
+- Organize content into soft islands rather than dashboard cards.
+- Keep one restrained accent only; no purple-first bias and no neon glow treatment.
+- Settings-style utility modals may use compact tab rails to switch sections instead of stacking large cards.
+- Tab rails should feel quiet and structural, not like dashboard navigation.
+- Inputs must visibly separate from the surface:
+- field height `46px`
+- large title input `58px`
+- radius `16px`
+- focus uses the app accent glow, not browser default rings
+- Toggle controls should be quiet switches, not browser checkboxes.
+- Category selection should be icon-first and human, with quick picks up front and advanced choices tucked behind expansion.
+
 ## Zoom Architecture Guidance
 - Start with transform-scale architecture using `CalendarViewport` + `CalendarStage`.
 - Do not use SVG yet unless export precision or performance requires it.

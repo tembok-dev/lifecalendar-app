@@ -3,8 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CalendarWeek, LifeEvent } from "@lifecalendar/shared";
 import type { CSSProperties } from "react";
 import { CalendarStage } from "./CalendarStage";
+import { EventListItem } from "./events/EventListItem";
+import { formatEventDate } from "./events/eventListFormatting";
 import { buildContextLabel, buildVisualCalendarRows, type VisualCalendarRow } from "./utils/visualCalendarRows";
 import { resolveCalendarDisplayMode, type CalendarEffectiveMode } from "./utils/resolveCalendarDisplayMode";
+import { ModalBody } from "../ui/primitives/ModalBody";
+import { ModalFooter } from "../ui/primitives/ModalFooter";
+import { ModalHeader } from "../ui/primitives/ModalHeader";
 import { ModalSurface } from "../ui/primitives/ModalSurface";
 
 export type CalendarDisplayMode = "auto" | "weeks" | "months";
@@ -21,6 +26,7 @@ interface LifeCalendarGridProps {
   onDisplayModeChange?: (mode: CalendarDisplayMode) => void;
   onSelectWeek: (weekIndex: number, anchor: { x: number; y: number; defaultDate: string; contextLabel: string }, events?: LifeEvent[]) => void;
   onSelectRowDate: (anchor: { x: number; y: number; defaultDate: string; contextLabel: string }) => void;
+  onRequestEditEvent: (event: LifeEvent, contextLabel: string) => void;
 }
 
 export function LifeCalendarGrid({
@@ -33,7 +39,8 @@ export function LifeCalendarGrid({
   showEventMarkers = true,
   onDisplayModeChange,
   onSelectWeek,
-  onSelectRowDate
+  onSelectRowDate,
+  onRequestEditEvent
 }: LifeCalendarGridProps) {
   const WEEK_VIEW_RAIL_WIDTH = 136;
   const MONTH_VIEW_RAIL_WIDTH = 112;
@@ -99,7 +106,7 @@ export function LifeCalendarGrid({
         unique.set(event.id, event);
       }
     }
-    return Array.from(unique.values()).sort((a, b) => a.date.localeCompare(b.date));
+    return Array.from(unique.values()).sort((a, b) => b.date.localeCompare(a.date));
   }, [weeks]);
 
   const gridStyle = {
@@ -173,23 +180,39 @@ export function LifeCalendarGrid({
         buildContextLabel={(startDate) => buildContextLabel(startDate, effectiveMode)}
       />
 
-      <ModalSurface open={eventsModalOpen} onClose={() => setEventsModalOpen(false)} ariaLabel="All events">
-        <div className="flex items-center justify-between">
-          <p className="font-medium text-zinc-100">Events</p>
-          <span className="rounded-full bg-zinc-200/12 px-2 py-[2px] text-xs text-zinc-200">{allEvents.length}</span>
-        </div>
-        <div className="mt-3 max-h-[56vh] space-y-1.5 overflow-y-auto pr-1">
+      <ModalSurface open={eventsModalOpen} onClose={() => setEventsModalOpen(false)} ariaLabel="All events" size="default">
+        <ModalHeader
+          title="Events"
+          subtitle={`${allEvents.length} ${allEvents.length === 1 ? "memory" : "memories"}`}
+          onClose={() => setEventsModalOpen(false)}
+        />
+        <ModalBody>
           {allEvents.length === 0 ? (
             <p className="text-xs text-muted">No events yet.</p>
           ) : (
-            allEvents.map((event) => (
-              <div key={event.id} className="rounded-md border border-line/55 bg-zinc-900/22 px-2 py-1.5">
-                <p className="text-[11px] font-medium text-zinc-100">{event.title}</p>
-                <p className="mt-0.5 text-xs text-muted">{new Date(event.date).toISOString().slice(0, 10)}</p>
-              </div>
-            ))
+            <div className="space-y-2">
+              {allEvents.map((event) => (
+                <EventListItem
+                  key={event.id}
+                  event={event}
+                  onClick={(selected) => {
+                    onRequestEditEvent(selected, formatEventDate(selected.date));
+                  }}
+                />
+              ))}
+            </div>
           )}
-        </div>
+        </ModalBody>
+        <ModalFooter>
+          <button
+            type="button"
+            onClick={() => setEventsModalOpen(false)}
+            className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+          >
+            Close
+          </button>
+          <span className="rounded-full bg-white/[0.05] px-3 py-1 text-[11px] text-[var(--text-muted)]">{allEvents.length} total</span>
+        </ModalFooter>
       </ModalSurface>
     </div>
   );

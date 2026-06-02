@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
+import { Sparkles } from "lucide-react";
 import type { AppSettings, Profile } from "@lifecalendar/shared";
 import type { CalendarScaleMode } from "../calendar/hooks/useCalendarZoom";
 import type { CalendarDisplayMode } from "../calendar/LifeCalendarGrid";
 import { CalendarViewSettingsForm } from "./CalendarViewSettingsForm";
 import { DataSettingsSection } from "./DataSettingsSection";
 import { ProfileSettingsForm } from "./ProfileSettingsForm";
+import { ModalAccentOrb } from "../ui/primitives/ModalAccentOrb";
+import { ModalBody } from "../ui/primitives/ModalBody";
+import { ModalFooter } from "../ui/primitives/ModalFooter";
+import { ModalHeader } from "../ui/primitives/ModalHeader";
 import { ModalSurface } from "../ui/primitives/ModalSurface";
+import { TabRail } from "../ui/primitives/TabRail";
 
 interface SettingsModalProps {
   open: boolean;
@@ -36,6 +42,7 @@ export function SettingsModal({
   onSave,
   onReload
 }: SettingsModalProps) {
+  const [activeTab, setActiveTab] = useState<"view" | "profile" | "data">("view");
   const [name, setName] = useState(profile.name);
   const [birthDate, setBirthDate] = useState(toDateInput(profile.birthDate));
   const [expectedLifespanYears, setExpectedLifespanYears] = useState(
@@ -60,6 +67,7 @@ export function SettingsModal({
     setShowYearMarkers(settings.showYearMarkers);
     setShowEventMarkers(settings.showEventIcons);
     setError(null);
+    setActiveTab("view");
   }, [displayMode, open, profile.birthDate, profile.expectedLifespanYears, profile.name, scaleMode, settings.showEventIcons, settings.showYearMarkers]);
 
   const validationError = useMemo(() => {
@@ -83,26 +91,30 @@ export function SettingsModal({
   }
 
   return (
-    <ModalSurface open={open} onClose={onClose} ariaLabel="Settings">
-      <section>
-        <div className="flex items-start justify-between">
-          <p className="text-sm font-medium text-zinc-100">Settings</p>
-          <button type="button" onClick={onClose} className="text-xs text-zinc-300/80">
-            Close
-          </button>
-        </div>
+    <ModalSurface open={open} onClose={onClose} ariaLabel="Settings" size="default" maxWidthPx={560} maxHeightPx={680} radiusPx={20}>
+      <ModalHeader
+        title="Settings"
+        subtitle="Tune the poster quietly."
+        onClose={onClose}
+        ornament={
+          <ModalAccentOrb>
+            <Sparkles size={14} className="text-[var(--accent-primary)]" />
+          </ModalAccentOrb>
+        }
+      />
 
-        <div className="mt-3 grid gap-4">
-          <ProfileSettingsForm
-            name={name}
-            birthDate={birthDate}
-            expectedLifespanYears={expectedLifespanYears}
-            onNameChange={setName}
-            onBirthDateChange={setBirthDate}
-            onExpectedLifespanChange={setExpectedLifespanYears}
-            error={error ?? validationError}
-          />
+      <TabRail
+        value={activeTab}
+        onChange={setActiveTab}
+        items={[
+          { value: "view", label: "View" },
+          { value: "profile", label: "Profile" },
+          { value: "data", label: "Data" }
+        ]}
+      />
 
+      <ModalBody>
+        {activeTab === "view" ? (
           <CalendarViewSettingsForm
             displayMode={defaultDisplayMode}
             scaleMode={defaultScaleMode}
@@ -113,50 +125,62 @@ export function SettingsModal({
             onShowYearMarkersChange={setShowYearMarkers}
             onShowEventMarkersChange={setShowEventMarkers}
           />
+        ) : null}
 
-          <DataSettingsSection profileId={profile.id} onReload={onReload} />
-        </div>
+        {activeTab === "profile" ? (
+          <ProfileSettingsForm
+            name={name}
+            birthDate={birthDate}
+            expectedLifespanYears={expectedLifespanYears}
+            onNameChange={setName}
+            onBirthDateChange={setBirthDate}
+            onExpectedLifespanChange={setExpectedLifespanYears}
+            error={error ?? validationError}
+          />
+        ) : null}
 
-        <div className="mt-4 flex items-center gap-2">
-          <button type="button" onClick={onClose} className="rounded-full border border-line/60 px-3 py-1 text-xs text-zinc-200/86">
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={saving || Boolean(validationError)}
-            onClick={async () => {
-              if (validationError) {
-                return;
-              }
-              setSaving(true);
-              setError(null);
-              try {
-                await onSave({
-                  profile: {
-                    name: name.trim(),
-                    birthDate: `${birthDate}T00:00:00.000Z`,
-                    expectedLifespanYears: expectedLifespanYears ? Number(expectedLifespanYears) : null
-                  },
-                  view: {
-                    displayMode: defaultDisplayMode,
-                    scaleMode: defaultScaleMode,
-                    showYearMarkers,
-                    showEventMarkers
-                  }
-                });
-                onClose();
-              } catch (err) {
-                setError(err instanceof Error ? err.message : "Unable to save settings.");
-              } finally {
-                setSaving(false);
-              }
-            }}
-            className="rounded-full bg-zinc-100/95 px-3 py-1 text-xs font-medium text-zinc-900 disabled:opacity-60"
-          >
-            {saving ? "Saving..." : "Save changes"}
-          </button>
-        </div>
-      </section>
+        {activeTab === "data" ? <DataSettingsSection profileId={profile.id} onReload={onReload} /> : null}
+      </ModalBody>
+
+      <ModalFooter>
+        <button type="button" onClick={onClose} className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]">
+          Cancel
+        </button>
+        <button
+          type="button"
+          disabled={saving || Boolean(validationError)}
+          onClick={async () => {
+            if (validationError) {
+              return;
+            }
+            setSaving(true);
+            setError(null);
+            try {
+              await onSave({
+                profile: {
+                  name: name.trim(),
+                  birthDate: `${birthDate}T00:00:00.000Z`,
+                  expectedLifespanYears: expectedLifespanYears ? Number(expectedLifespanYears) : null
+                },
+                view: {
+                  displayMode: defaultDisplayMode,
+                  scaleMode: defaultScaleMode,
+                  showYearMarkers,
+                  showEventMarkers
+                }
+              });
+              onClose();
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Unable to save settings.");
+            } finally {
+              setSaving(false);
+            }
+          }}
+          className="rounded-full bg-[linear-gradient(135deg,rgba(112,232,224,0.94),rgba(83,185,205,0.9))] px-5 py-2 text-[12px] font-medium text-slate-950 shadow-[0_0_24px_var(--accent-primary-glow)] disabled:opacity-60"
+        >
+          {saving ? "Saving..." : "Save changes"}
+        </button>
+      </ModalFooter>
     </ModalSurface>
   );
 }

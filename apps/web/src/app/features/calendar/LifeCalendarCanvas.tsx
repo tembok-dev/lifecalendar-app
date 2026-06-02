@@ -66,11 +66,16 @@ export function LifeCalendarCanvas({
   const [selectedAnchor, setSelectedAnchor] = useState<{ x: number; y: number; defaultDate: string; contextLabel: string } | null>(null);
   const [selectedEventsOverride, setSelectedEventsOverride] = useState<LifeEvent[] | null>(null);
   const [legendAnchor, setLegendAnchor] = useState<{ x: number; y: number } | null>(null);
-  const [quickAddAnchor, setQuickAddAnchor] = useState<{ x: number; y: number } | null>(null);
-  const [quickAddDefaultDate, setQuickAddDefaultDate] = useState<string | null>(null);
-  const [quickAddContextLabel, setQuickAddContextLabel] = useState<string | null>(null);
-  const [quickAddSaving, setQuickAddSaving] = useState(false);
-  const [quickAddError, setQuickAddError] = useState<string | null>(null);
+  const [eventModalState, setEventModalState] = useState<{
+    mode: "create" | "edit";
+    anchor: { x: number; y: number } | null;
+    defaultDate: string | null;
+    contextLabel: string | null;
+    initialEvent: LifeEvent | null;
+  } | null>(null);
+  const [eventModalSaving, setEventModalSaving] = useState(false);
+  const [eventModalDeleting, setEventModalDeleting] = useState(false);
+  const [eventModalError, setEventModalError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
@@ -215,11 +220,15 @@ export function LifeCalendarCanvas({
           onToggleInfo={(anchor) => setLegendAnchor((current) => (current ? null : anchor))}
           onQuickAdd={(anchor) => {
             requestAnimationFrame(() => {
-              setQuickAddAnchor(anchor);
-              setQuickAddDefaultDate(new Date().toISOString());
-              setQuickAddContextLabel(`Today • ${new Date().toLocaleDateString()}`);
+              setEventModalState({
+                mode: "create",
+                anchor,
+                defaultDate: new Date().toISOString(),
+                contextLabel: `Today • ${new Date().toLocaleDateString()}`,
+                initialEvent: null
+              });
             });
-            setQuickAddError(null);
+            setEventModalError(null);
           }}
           onOpenSettings={() => setSettingsOpen(true)}
           showAddHint={!hasAnyEvents}
@@ -239,17 +248,48 @@ export function LifeCalendarCanvas({
                 showEventMarkers={calendar.settings.showEventIcons}
                 onDisplayModeChange={setDisplayMode}
                 onSelectWeek={(weekIndex, anchor, events) => {
+                  if (events?.length === 1) {
+                    const event = events[0];
+                    if (!event) {
+                      return;
+                    }
+                    setSelectedAnchor(null);
+                    setSelectedEventsOverride(null);
+                    setEventModalError(null);
+                    setEventModalState({
+                      mode: "edit",
+                      anchor: null,
+                      defaultDate: event.date,
+                      contextLabel: anchor.contextLabel,
+                      initialEvent: event
+                    });
+                    return;
+                  }
                   setSelectedWeekIndex(weekIndex);
                   setSelectedAnchor(anchor);
                   setSelectedEventsOverride(events ?? null);
                 }}
                 onSelectRowDate={(anchor) => {
                   requestAnimationFrame(() => {
-                    setQuickAddAnchor({ x: anchor.x, y: anchor.y });
-                    setQuickAddDefaultDate(anchor.defaultDate);
-                    setQuickAddContextLabel(anchor.contextLabel);
+                    setEventModalState({
+                      mode: "create",
+                      anchor: { x: anchor.x, y: anchor.y },
+                      defaultDate: anchor.defaultDate,
+                      contextLabel: anchor.contextLabel,
+                      initialEvent: null
+                    });
                   });
-                  setQuickAddError(null);
+                  setEventModalError(null);
+                }}
+                onRequestEditEvent={(event, contextLabel) => {
+                  setEventModalError(null);
+                  setEventModalState({
+                    mode: "edit",
+                    anchor: null,
+                    defaultDate: event.date,
+                    contextLabel,
+                    initialEvent: event
+                  });
                 }}
               />
             </CalendarStage>
@@ -278,33 +318,72 @@ export function LifeCalendarCanvas({
           setSelectedAnchor(null);
           setSelectedEventsOverride(null);
         }}
-        onCreateEvent={onCreateEvent}
-        onUpdateEvent={onUpdateEvent}
-        onDeleteEvent={onDeleteEvent}
+        onRequestCreate={({ defaultDate, contextLabel }) => {
+          setSelectedAnchor(null);
+          setSelectedEventsOverride(null);
+          setEventModalError(null);
+          setEventModalState({
+            mode: "create",
+            anchor: null,
+            defaultDate,
+            contextLabel,
+            initialEvent: null
+          });
+        }}
+        onRequestEdit={(event, contextLabel) => {
+          setSelectedAnchor(null);
+          setSelectedEventsOverride(null);
+          setEventModalError(null);
+          setEventModalState({
+            mode: "edit",
+            anchor: null,
+            defaultDate: event.date,
+            contextLabel,
+            initialEvent: event
+          });
+        }}
       />
 
       <EventQuickAddPopover
-        open={Boolean(quickAddAnchor)}
-        anchor={quickAddAnchor}
-        defaultDate={quickAddDefaultDate ?? undefined}
-        contextLabel={quickAddContextLabel ?? undefined}
-        saving={quickAddSaving}
-        error={quickAddError}
+        open={Boolean(eventModalState)}
+        anchor={eventModalState?.anchor ?? undefined}
+        mode={eventModalState?.mode ?? "create"}
+        defaultDate={eventModalState?.defaultDate ?? undefined}
+        contextLabel={eventModalState?.contextLabel ?? undefined}
+        initialEvent={eventModalState?.initialEvent ?? undefined}
+        saving={eventModalSaving}
+        deleting={eventModalDeleting}
+        error={eventModalError}
         onClose={() => {
-          setQuickAddAnchor(null);
-          setQuickAddDefaultDate(null);
-          setQuickAddContextLabel(null);
+          setEventModalState(null);
+          setEventModalError(null);
         }}
-        onCreate={async (input) => {
-          setQuickAddSaving(true);
-          setQuickAddError(null);
+        onSubmit={async (input) => {
+          setEventModalSaving(true);
+          setEventModalError(null);
           try {
-            await onCreateEvent(input);
+            if (eventModalState?.mode === "edit" && eventModalState.initialEvent) {
+              await onUpdateEvent(eventModalState.initialEvent.id, input);
+            } else {
+              await onCreateEvent(input);
+            }
           } catch (err) {
-            setQuickAddError(err instanceof Error ? err.message : "Unable to save event");
+            setEventModalError(err instanceof Error ? err.message : "Unable to save event");
             throw err;
           } finally {
-            setQuickAddSaving(false);
+            setEventModalSaving(false);
+          }
+        }}
+        onDelete={async (eventId) => {
+          setEventModalDeleting(true);
+          setEventModalError(null);
+          try {
+            await onDeleteEvent(eventId);
+          } catch (err) {
+            setEventModalError(err instanceof Error ? err.message : "Unable to delete event");
+            throw err;
+          } finally {
+            setEventModalDeleting(false);
           }
         }}
       />

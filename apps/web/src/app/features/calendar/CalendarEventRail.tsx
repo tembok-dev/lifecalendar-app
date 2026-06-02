@@ -120,7 +120,7 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
                 aria-label={item.tooltip}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectEvent(item.event, { x: e.clientX, y: e.clientY });
+                  onSelectEvent({ ...item.event, date: item.date }, { x: e.clientX, y: e.clientY });
                   setOpen(false);
                 }}
                 className="flex h-[20px] w-full items-center gap-1.5 text-left text-[11px] leading-none text-zinc-300/72 transition-all duration-150"
@@ -144,7 +144,7 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
                 aria-label={item.tooltip}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectEvent(item.event, { x: e.clientX, y: e.clientY });
+                  onSelectEvent({ ...item.event, date: item.date }, { x: e.clientX, y: e.clientY });
                   setOpen(false);
                 }}
                 className="flex h-[20px] w-full items-center gap-1.5 text-left text-[11px] leading-none text-zinc-200/85 transition-all duration-150"

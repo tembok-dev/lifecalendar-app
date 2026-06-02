@@ -29,6 +29,7 @@ export function PopoverSurface({
 }: PopoverSurfaceProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [portalHost, setPortalHost] = useState<HTMLElement | null>(null);
+  const [isPositioned, setIsPositioned] = useState(false);
   const [position, setPosition] = useState<{ left: number; top: number; above: boolean; side: "top" | "bottom" | "left" | "right" }>({
     left: 0,
     top: 0,
@@ -44,6 +45,11 @@ export function PopoverSurface({
   }, []);
 
   useEffect(() => {
+    if (!open) {
+      setIsPositioned(false);
+      return;
+    }
+
     if (!open) {
       return;
     }
@@ -89,6 +95,7 @@ export function PopoverSurface({
           placement
         });
         setPosition({ left: anchored.left, top: anchored.top, above: false, side: anchored.side === "left" ? "right" : "left" });
+        setIsPositioned(true);
         return;
       }
 
@@ -103,6 +110,7 @@ export function PopoverSurface({
         placement
       });
       setPosition({ left: anchored.left, top: anchored.top, above: false, side: anchored.side === "left" ? "right" : "left" });
+      setIsPositioned(true);
       return;
     }
 
@@ -113,6 +121,7 @@ export function PopoverSurface({
     const clampedLeft = Math.max(margin, Math.min(left, window.innerWidth - rect.width - margin));
 
     setPosition({ left: clampedLeft, top: clampedTop, above, side: above ? "bottom" : "top" });
+    setIsPositioned(true);
   }, [anchor, anchorRect, open, width, children, placement]);
 
   if (!open || !anchor || !portalHost) {
@@ -124,11 +133,12 @@ export function PopoverSurface({
       ref={ref}
       className={[
         "fixed z-[100] border border-[rgba(220,230,240,0.08)] bg-[rgba(16,22,27,0.92)] shadow-[0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-[16px]",
-        "rounded-[18px] p-[14px] text-[13px] text-zinc-300 motion-safe:transition-all motion-safe:duration-150 motion-safe:data-[open=true]:translate-y-0 motion-safe:data-[open=true]:opacity-100",
+        "rounded-[18px] p-[14px] text-[13px] text-zinc-300 motion-safe:transition-[opacity,transform] motion-safe:duration-150",
+        isPositioned ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0",
         className ?? ""
       ].join(" ")}
       data-open={open ? "true" : "false"}
-      style={{ left: position.left, top: position.top, width }}
+      style={{ left: position.left, top: position.top, width, visibility: isPositioned ? "visible" : "hidden" }}
       role="dialog"
       aria-label={ariaLabel}
     >
