@@ -3,7 +3,8 @@ export function formatEventDate(dateIso: string): string {
   return date.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
-    day: "numeric"
+    day: "numeric",
+    timeZone: "UTC"
   });
 }
 

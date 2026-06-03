@@ -4,6 +4,7 @@ import { EVENT_COLOR_TEXT_CLASS, resolveEventIcon } from "./utils/eventIcons";
 import { buildCalendarEventDisplayItems } from "./utils/calendarEventDisplay";
 import type { VisualCalendarRow } from "./utils/visualCalendarRows";
 import { PopoverSurface } from "../ui/primitives/PopoverSurface";
+import { Tooltip } from "../ui/primitives/TooltipSurface";
 
 interface CalendarEventRailProps {
   row: VisualCalendarRow;
@@ -51,13 +52,13 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
   };
 
   if (!showEventMarkers || displayItems.length === 0) {
-    return <div className="min-h-[var(--week-cell-size)] w-[var(--calendar-event-rail-width)] " />;
+    return <div className="h-[var(--week-cell-size)] w-[var(--calendar-event-rail-width)]" />;
   }
 
   return (
     <div
       ref={railRef}
-      className="calendar-event-rail min-h-[var(--week-cell-size)] w-[var(--calendar-event-rail-width)] border-l border-zinc-200/5 py-[1px] pl-2"
+      className="calendar-event-rail relative z-20 flex h-[var(--week-cell-size)] w-[var(--calendar-event-rail-width)] items-center border-l border-zinc-200/5 pl-2 leading-none"
       onMouseEnter={() => {
         clearCloseTimer();
         setAnchorRect(anchorRef.current?.getBoundingClientRect() ?? null);
@@ -77,14 +78,14 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
           className={["calendar-event-rail-anchor inline-flex items-center gap-1.5 opacity-100 transition-opacity duration-150", open ? "opacity-55" : "opacity-100"].join(" ")}
         >
           {visible.map((item) => {
-            const Icon = resolveEventIcon(item.category, item.iconKey);
+            const Icon = resolveEventIcon(item.category, item.resolvedIconKey);
             return (
               <span key={item.id} className={["inline-flex transition-opacity", item.isUpcomingPreview ? "opacity-55" : "opacity-65"].join(" ")}>
                 <Icon size={11} weight="duotone" className={item.isUpcomingPreview ? "text-zinc-300/70" : (EVENT_COLOR_TEXT_CLASS[item.colorKey] ?? "text-zinc-300/75")} />
               </span>
             );
           })}
-          {compactHiddenCount > 0 ? <span className="text-xs text-muted">+{compactHiddenCount}</span> : null}
+          {compactHiddenCount > 0 ? <span className="text-[10px] leading-none text-[var(--text-muted)]">+{compactHiddenCount}</span> : null}
         </div>
       </div>
 
@@ -111,7 +112,7 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
 
           {visibleUpcoming.length > 0 ? <p className="mb-1 text-[10px] uppercase tracking-[0.08em] text-zinc-400/66">Upcoming</p> : null}
           {visibleUpcoming.map((item, index) => {
-            const Icon = resolveEventIcon(item.category, item.iconKey);
+            const Icon = resolveEventIcon(item.category, item.resolvedIconKey);
             return (
               <button
                 key={`${item.id}:popover-upcoming`}
@@ -128,14 +129,16 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
               >
                 <Icon size={11} weight="duotone" className="text-zinc-300/68" />
                 <span className="w-10 shrink-0 text-zinc-400/72">{item.dateLabel}</span>
-                <span className="truncate" title={item.tooltip}>{item.title}</span>
+                <Tooltip content={item.tooltip} className="min-w-0 flex-1" tooltipClassName="max-w-[220px]" showArrow={false}>
+                  <span className="block truncate">{item.title}</span>
+                </Tooltip>
               </button>
             );
           })}
 
           {visibleMemories.length > 0 ? <p className="mb-1 mt-1 text-[10px] uppercase tracking-[0.08em] text-zinc-400/66">Memories</p> : null}
           {visibleMemories.map((item, index) => {
-            const Icon = resolveEventIcon(item.category, item.iconKey);
+            const Icon = resolveEventIcon(item.category, item.resolvedIconKey);
             return (
               <button
                 key={`${item.id}:popover-memory`}
@@ -156,7 +159,9 @@ export function CalendarEventRail({ row, showEventMarkers, onSelectEvent }: Cale
               >
                 <Icon size={11} weight="duotone" className={EVENT_COLOR_TEXT_CLASS[item.colorKey] ?? "text-zinc-300/75"} />
                 <span className="w-10 shrink-0 text-zinc-400/72">{item.dateLabel}</span>
-                <span className="truncate" title={item.tooltip}>{item.title}</span>
+                <Tooltip content={item.tooltip} className="min-w-0 flex-1" tooltipClassName="max-w-[220px]" showArrow={false}>
+                  <span className="block truncate">{item.title}</span>
+                </Tooltip>
               </button>
             );
           })}

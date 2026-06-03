@@ -25,7 +25,7 @@ export function CalendarAxisLabels({ mode, colCount, gridWidth, groupSize, stage
     <div className="mb-2 grid items-center gap-2" style={{ gridTemplateColumns: stageTemplateColumns }}>
       <div />
       {mode === "months" ? (
-        <div className="grid w-full text-xs text-muted" style={{ gap: "var(--calendar-month-group-gap)", gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
+        <div className="grid w-full text-xs text-[var(--text-muted)]" style={{ gap: "var(--calendar-month-group-gap)", gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}>
           {chunk(labels, 3).map((quarter, quarterIndex) => (
             <div
               key={`axis-q-${quarterIndex}`}
@@ -41,7 +41,7 @@ export function CalendarAxisLabels({ mode, colCount, gridWidth, groupSize, stage
           ))}
         </div>
       ) : (
-        <div className="flex w-full text-xs text-muted" style={{ gap: "var(--calendar-week-group-gap)", maxWidth: gridWidth }}>
+        <div className="flex w-full text-xs text-[var(--text-muted)]" style={{ gap: "var(--calendar-week-group-gap)", maxWidth: gridWidth }}>
           {chunk(labels, groupSize).map((group, groupIndex) => (
             <div key={`axis-g${groupIndex}`} className="grid" style={{ gap: "var(--calendar-cell-gap)", gridTemplateColumns: `repeat(${groupSize}, var(--calendar-cell-width,var(--week-cell-size)))` }}>
               {group.map((label, col) => (
@@ -59,10 +59,10 @@ export function CalendarAxisLabels({ mode, colCount, gridWidth, groupSize, stage
           <button
             type="button"
             onClick={onOpenEvents}
-            className="inline-flex items-center gap-1 rounded-md border border-zinc-300/20 bg-[rgba(16,22,27,0.85)] px-2 py-1 text-xs text-zinc-200 transition hover:text-zinc-100"
+            className="inline-flex items-center gap-1 rounded-md border border-zinc-300/20 bg-[rgba(16,22,27,0.85)] px-2 py-1 text-xs text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
           >
             <span>Events</span>
-            <span className="rounded-full bg-zinc-200/12 px-1.5 py-[1px] text-[10px]">{eventsCount}</span>
+            <span className="rounded-full bg-zinc-200/12 px-1.5 py-[1px] text-[10px] text-[var(--text-muted)]">{eventsCount}</span>
           </button>
         ) : null}
       </div>

@@ -35,7 +35,16 @@ export interface BuildCalendarInput {
   fallbackLifespanYears?: number;
 }
 
+export interface CalendarDerivedData {
+  currentCalendarYear: number;
+  inRangeEvents: LifeEvent[];
+  currentYearEvents: LifeEvent[];
+  currentYearUpcomingRecurringEvents: LifeEvent[];
+}
+
 export interface BuiltCalendar {
   summary: CalendarSummary;
   weeks: CalendarWeek[];
+  events: LifeEvent[];
+  derived: CalendarDerivedData;
 }

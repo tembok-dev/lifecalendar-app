@@ -14,7 +14,8 @@ export function FloatingSelect({ className, children, leadingIcon, ...props }: F
       </span>
       <select
         {...props}
-        className={["floating-field h-[46px] appearance-none px-4 pr-10 text-[14px]", leadingIcon ? "pl-12" : "", className ?? ""].join(" ")}
+        className={["floating-field appearance-none px-4 pr-10 text-[14px]", leadingIcon ? "pl-12" : "", className ?? ""].join(" ")}
+        style={{ height: "var(--field-height-md)" }}
       >
         {children}
       </select>

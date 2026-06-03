@@ -1,4 +1,4 @@
-import type { LifeEvent } from "@lifecalendar/shared";
+import type { IconKey, LifeEvent } from "@lifecalendar/shared";
 import { EVENT_CATEGORY_LABEL } from "./eventIcons";
 
 export interface CalendarEventDisplayItem {
@@ -7,6 +7,7 @@ export interface CalendarEventDisplayItem {
   date: string;
   category: LifeEvent["category"];
   iconKey: LifeEvent["iconKey"];
+  resolvedIconKey: IconKey;
   colorKey: LifeEvent["colorKey"];
   isUpcomingPreview: boolean;
   displayTitle: string;
@@ -47,6 +48,7 @@ function toDisplayItem(event: LifeEvent, forcePreview: boolean): CalendarEventDi
     date: event.date,
     category: event.category,
     iconKey: event.iconKey,
+    resolvedIconKey: resolveDisplayIconKey(event, isUpcomingPreview),
     colorKey: event.colorKey,
     isUpcomingPreview,
     displayTitle: isUpcomingPreview ? `Upcoming: ${baseTitle}` : baseTitle,
@@ -57,7 +59,14 @@ function toDisplayItem(event: LifeEvent, forcePreview: boolean): CalendarEventDi
   };
 }
 
+function resolveDisplayIconKey(event: LifeEvent, isUpcomingPreview: boolean): IconKey {
+  if (event.category === "newborn" && event.isRecurring && isUpcomingPreview) {
+    return "cake";
+  }
+  return event.iconKey;
+}
+
 function formatDateLabel(dateIso: string): string {
   const date = new Date(dateIso);
-  return date.toLocaleDateString(undefined, { day: "2-digit", month: "short" });
+  return date.toLocaleDateString(undefined, { day: "2-digit", month: "short", timeZone: "UTC" });
 }

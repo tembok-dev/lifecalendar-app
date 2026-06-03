@@ -1,7 +1,6 @@
 import type { Profile } from "@lifecalendar/shared";
 import { Aperture, CalendarClock } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { CalendarScaleMode } from "../hooks/useCalendarZoom";
 import { LifeProgressRail } from "./LifeProgressRail";
 import { PosterNavIcons } from "./PosterNavIcons";
 
@@ -11,9 +10,6 @@ interface PosterTopRailProps {
   totalWeeks: number;
   currentAgeYears: number;
   upcomingCount: number;
-  mode: CalendarScaleMode;
-  onToggleMode: () => void;
-  onToggleInfo: (anchor: { x: number; y: number }) => void;
   onQuickAdd: (anchor: { x: number; y: number }) => void;
   onOpenSettings: () => void;
   showAddHint: boolean;
@@ -25,9 +21,6 @@ export function PosterTopRail({
   totalWeeks,
   currentAgeYears,
   upcomingCount,
-  mode,
-  onToggleMode,
-  onToggleInfo,
   onQuickAdd,
   onOpenSettings,
   showAddHint
@@ -51,9 +44,6 @@ export function PosterTopRail({
         }
       >
         <PosterNavIcons
-          mode={mode}
-          onToggleMode={onToggleMode}
-          onToggleInfo={onToggleInfo}
           onQuickAdd={onQuickAdd}
           onOpenSettings={onOpenSettings}
           showHint={showAddHint}

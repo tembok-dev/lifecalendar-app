@@ -10,7 +10,9 @@ interface EventCategoryPickerProps {
 }
 
 const COLLAPSED_COUNT = 8;
-const PRIORITY_CATEGORIES: EventCategory[] = [
+const CATEGORY_PICKER_ORDER: EventCategory[] = [
+  "memory",
+  "newborn",
   "birthday",
   "relationship",
   "family",
@@ -18,17 +20,21 @@ const PRIORITY_CATEGORIES: EventCategory[] = [
   "home",
   "career",
   "education",
-  "health"
+  "health",
+  "loss",
+  "achievement",
+  "challenge",
+  "goal",
+  "custom"
 ];
 
 export function EventCategoryPicker({ value, onChange }: EventCategoryPickerProps) {
-  const [showAll, setShowAll] = useState(!PRIORITY_CATEGORIES.includes(value));
+  const [showAll, setShowAll] = useState(!CATEGORY_PICKER_ORDER.slice(0, COLLAPSED_COUNT).includes(value));
 
-  const orderedCategories = useMemo(() => {
-    const rest = EVENT_CATEGORIES.filter((category) => category !== value && !PRIORITY_CATEGORIES.includes(category));
-    const priority = [value, ...PRIORITY_CATEGORIES.filter((category) => category !== value)];
-    return [...priority, ...rest];
-  }, [value]);
+  const orderedCategories = useMemo(
+    () => CATEGORY_PICKER_ORDER.filter((category) => EVENT_CATEGORIES.includes(category)),
+    []
+  );
 
   const collapsedCategories = orderedCategories.slice(0, COLLAPSED_COUNT);
   const expandedCategories = orderedCategories.slice(COLLAPSED_COUNT);

@@ -63,6 +63,111 @@ Support two intentional compositions. These are explicit product modes, not acci
 - No neon dashboard color language.
 - No gamer-glow treatment.
 
+## Product Visual Identity
+- Premium life poster, not SaaS control panel.
+- Floating surfaces should feel deliberate and calm, never plastic or hyper-glossy.
+- Visual tuning should come from shared tokens, not one-off component styling.
+
+## Color System
+- Semantic color tokens live in `apps/web/src/index.css`.
+- Core token groups:
+- background: `--color-bg`, `--color-bg-soft`, `--color-poster`
+- surfaces: `--color-surface`, `--color-surface-raised`, `--color-surface-floating`, `--color-surface-field`
+- borders: `--color-border-soft`, `--color-border-strong`
+- text: `--color-text-primary`, `--color-text-secondary`, `--color-text-muted`
+- accents: `--color-accent`, `--color-accent-soft`, `--color-accent-strong`
+- danger: `--color-danger`
+- Component styling should reference semantic tokens instead of hard-coded random colors.
+
+## Dark Theme Tokens
+- Dark theme is the active theme and is defined under `:root`.
+- Existing working visuals should be preserved by updating token values rather than rewriting layout primitives.
+
+## Light Mode Preparation
+- A `[data-theme="light"]` scaffold exists for future light mode.
+- Light mode should override semantic tokens only.
+- Do not fork component markup or duplicate primitives for light mode.
+
+## Radius Rules
+- Use a reduced squircle-like system:
+- `--radius-xs: 6px`
+- `--radius-sm: 10px`
+- `--radius-md: 14px`
+- `--radius-lg: 18px`
+- `--radius-xl: 22px`
+- `--radius-modal: 22px`
+- `--radius-pill: 999px`
+- Avoid giant bubbly corner radii unless the shape is intentionally pill-like.
+
+## Surface Hierarchy
+- Page/background uses `--surface-page` and poster gradients.
+- Raised contextual surfaces use `--color-surface-raised`.
+- Modal surfaces use `--surface-floating`.
+- Fields use `--surface-field`.
+- Keep layering subtle; rely on depth and spacing more than heavy borders.
+
+## Modal Rules
+- Modal width tokens:
+- `--modal-width-compact`
+- `--modal-width-default`
+- `--modal-width-wide`
+- Modal radius should use `--radius-modal`.
+- Modal shadow should use `--shadow-modal`.
+- Modal body should scroll internally with styled scrollbars when content exceeds height.
+- Large forms inside modals must stay compact; avoid full-page form feeling.
+
+## Popover Rules
+- Popover width uses `--popover-width-md` unless a justified override is needed.
+- Popovers use `--shadow-popover` and `--radius-lg`.
+- Motion should be opacity + small translate only.
+- Popovers must appear at their anchor, not visibly travel from screen origin.
+
+## Tooltip Rules
+- Tooltips should use the shared floating glass primitive, not browser-native tooltip chrome.
+- Tooltip sizing should stay compact:
+- font `11-12px`
+- padding `6px 8px`
+- max width `260px`
+- Tooltips are preview-only and should never replace click-based detail flows.
+- Calendar event cells may show short tooltip previews, but multi-event hover must remain icon/count-first rather than text-card heavy.
+
+## Field Rules
+- Field heights:
+- `--field-height-sm`
+- `--field-height-md`
+- `--field-height-lg`
+- Field radius uses `--radius-md`.
+- Focus ring and active emphasis use accent tokens, not browser defaults.
+
+## Toggle Rules
+- Toggles stay quiet and compact.
+- Accent only appears when active.
+- Never use oversized glossy switches.
+
+## Category Chip Rules
+- Chips use shared radius tokens and subtle borders.
+- Selected state may use accent ring/glow, but event/category icons should preserve category color when appropriate.
+- Avoid giant kiosk-like category grids.
+
+## Event Marker Rules
+- Event markers should remain quieter than the current time marker.
+- Recurring anticipation markers must stay softer than completed memories.
+- Destructive actions are never exposed directly from event list rows.
+
+## Calendar Grid Rules
+- Calendar-specific geometry tokens stay in `index.css` beside general design tokens.
+- Shared token edits should be enough to tune spacing, rail width, month cell proportions, and current-cell emphasis globally.
+
+## Motion Rules
+- Motion tokens:
+- `--motion-fast: 120ms`
+- `--motion-base: 160ms`
+- `--motion-slow: 220ms`
+- `--ease-standard`
+- `--ease-out-soft`
+- Use snappy reveal motion for overlays.
+- Avoid bounce, springy theatrics, or long AI-like float animations.
+
 ## Grid System
 - 52 columns per life year.
 - 1 horizontal row per life year.
@@ -205,6 +310,10 @@ Support two intentional compositions. These are explicit product modes, not acci
 - Giant competing cards.
 - Neon/gamer glow.
 - Any first impression resembling SaaS analytics.
+- Native ugly scrollbars inside premium overlay surfaces.
+- Random one-off colors or component-specific magic radii without documentation.
+- Full-page Add Memory or full-page Settings forms inside modals.
+- Delete actions exposed directly in event list rows.
 
 ## Acceptance Test
 When opened, the first impression must be:

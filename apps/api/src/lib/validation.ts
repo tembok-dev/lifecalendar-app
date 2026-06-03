@@ -21,7 +21,9 @@ export const patchProfileSchema = createProfileSchema.partial();
 
 export const createEventSchema = z.object({
   date: isoDate,
-  weekIndex: z.number().int().min(0),
+  // Events may exist before the profile birth date. Negative weekIndex values
+  // are allowed for storage and are simply ignored by the visible life grid.
+  weekIndex: z.number().int(),
   category: z.enum(EVENT_CATEGORIES),
   title: z.string().trim().min(1).max(180),
   note: z.string().max(4000).nullable().optional(),

@@ -46,7 +46,7 @@ export function EventQuickAddPopover({
   onDelete
 }: EventQuickAddPopoverProps) {
   const [localError, setLocalError] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const formId = "add-memory-modal-form";
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function EventQuickAddPopover({
   }, [error]);
 
   useEffect(() => {
-    setConfirmDelete(false);
+    setConfirmDeleteOpen(false);
   }, [initialEvent?.id, open]);
 
   if (!open) {
@@ -98,12 +98,6 @@ export function EventQuickAddPopover({
             }
           }}
         />
-        {mode === "edit" && initialEvent && onDelete && confirmDelete ? (
-          <div className="mt-4 rounded-[14px] bg-white/[0.03] px-3 py-3">
-            <p className="text-[12px] font-medium text-[var(--text-primary)]">Delete this memory?</p>
-            <p className="mt-1 text-[11px] text-[var(--text-muted)]">This cannot be undone.</p>
-          </div>
-        ) : null}
       </ModalBody>
 
       <ModalFooter>
@@ -111,59 +105,77 @@ export function EventQuickAddPopover({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+            className="ui-radius-pill border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
           >
             Cancel
           </button>
           {mode === "edit" && initialEvent && onDelete ? (
-            confirmDelete ? (
               <button
                 type="button"
-                onClick={() => setConfirmDelete(false)}
-                className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
-              >
-                Never mind
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setConfirmDelete(true)}
-                className="inline-flex items-center gap-2 rounded-full border border-rose-300/25 bg-rose-400/10 px-4 py-2 text-[12px] text-rose-200 transition hover:border-rose-300/40 hover:bg-rose-400/14"
+                onClick={() => setConfirmDeleteOpen(true)}
+                className="ui-radius-pill inline-flex items-center gap-2 border border-rose-300/25 bg-rose-400/10 px-4 py-2 text-[12px] text-rose-200 transition hover:border-rose-300/40 hover:bg-rose-400/14"
               >
                 <Trash2 size={14} />
                 <span>Delete event</span>
               </button>
-            )
           ) : null}
         </div>
-        {confirmDelete && mode === "edit" && initialEvent && onDelete ? (
-          <button
-            type="button"
-            disabled={deleting}
-            onClick={async () => {
-              try {
-                await onDelete(initialEvent.id);
-                onClose();
-              } catch (err) {
-                setLocalError(err instanceof Error ? err.message : "Unable to delete event");
-              }
-            }}
-            className="inline-flex items-center gap-2 rounded-full bg-rose-400/92 px-5 py-2 text-[12px] font-medium text-slate-950 disabled:opacity-60"
-          >
-            <Trash2 size={14} />
-            <span>{deleting ? "Deleting..." : "Delete"}</span>
-          </button>
-        ) : (
-          <button
-            type="submit"
-            form={formId}
-            disabled={saving}
-            className="rounded-full bg-[linear-gradient(135deg,rgba(112,232,224,0.94),rgba(83,185,205,0.9))] px-5 py-2 text-[12px] font-medium text-slate-950 disabled:opacity-65"
-          >
-            {saving ? "Saving..." : submitLabel}
-          </button>
-        )}
+        <button
+          type="submit"
+          form={formId}
+          disabled={saving}
+          className="ui-radius-pill bg-[linear-gradient(135deg,rgba(112,232,224,0.94),rgba(83,185,205,0.9))] px-5 py-2 text-[12px] font-medium text-slate-950 disabled:opacity-65"
+        >
+          {saving ? "Saving..." : submitLabel}
+        </button>
       </ModalFooter>
+
+      {mode === "edit" && initialEvent && onDelete ? (
+        <ModalSurface
+          open={confirmDeleteOpen}
+          onClose={() => setConfirmDeleteOpen(false)}
+          ariaLabel="Delete memory confirmation"
+          size="compact"
+          maxWidthPx={360}
+        >
+          <ModalHeader title="Delete this memory?" subtitle="This cannot be undone." onClose={() => setConfirmDeleteOpen(false)} />
+          <ModalBody>
+            <p className="text-[13px] text-[var(--text-secondary)]">
+              {initialEvent.title ? `Delete "${initialEvent.title}"?` : "Delete this event?"}
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <button
+              type="button"
+              onClick={() => setConfirmDeleteOpen(false)}
+              className="ui-radius-pill border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={async () => {
+                try {
+                  await onDelete(initialEvent.id);
+                  setConfirmDeleteOpen(false);
+                  onClose();
+                } catch (err) {
+                  setLocalError(err instanceof Error ? err.message : "Unable to delete event");
+                }
+              }}
+              className="ui-radius-pill inline-flex min-w-[112px] items-center justify-center gap-2 border px-5 py-2 text-[12px] font-medium text-white shadow-[var(--shadow-soft)] transition disabled:opacity-60"
+              style={{
+                borderColor: "rgba(255,255,255,0.12)",
+                background: "linear-gradient(135deg, var(--color-danger), var(--color-danger-strong))"
+              }}
+            >
+              <Trash2 size={14} />
+              <span>{deleting ? "Deleting..." : "Delete"}</span>
+            </button>
+          </ModalFooter>
+        </ModalSurface>
+      ) : null}
     </ModalSurface>
   );
 }

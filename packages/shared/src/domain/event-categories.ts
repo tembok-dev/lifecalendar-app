@@ -1,4 +1,6 @@
 export const EVENT_CATEGORIES = [
+  "memory",
+  "newborn",
   "birthday",
   "relationship",
   "family",
@@ -11,7 +13,6 @@ export const EVENT_CATEGORIES = [
   "achievement",
   "challenge",
   "goal",
-  "memory",
   "custom"
 ] as const;
 
@@ -26,6 +27,7 @@ export type EmotionalTone =
   | "hopeful";
 
 export type IconKey =
+  | "carriage"
   | "cake"
   | "heart"
   | "users"
@@ -33,6 +35,7 @@ export type IconKey =
   | "house"
   | "briefcase"
   | "book"
+  | "pulse"
   | "cross"
   | "moon"
   | "trophy"
@@ -64,20 +67,21 @@ export interface EventCategoryDefaults {
 }
 
 export const EVENT_CATEGORY_DEFAULTS: Record<EventCategory, EventCategoryDefaults> = {
+  memory: { emotionalTone: "reflective", iconKey: "star", colorKey: "amber" },
+  newborn: { emotionalTone: "warm", iconKey: "carriage", colorKey: "coral" },
   birthday: { emotionalTone: "joyful", iconKey: "cake", colorKey: "rose" },
-  relationship: { emotionalTone: "warm", iconKey: "heart", colorKey: "coral" },
-  family: { emotionalTone: "warm", iconKey: "users", colorKey: "amber" },
-  travel: { emotionalTone: "reflective", iconKey: "plane", colorKey: "teal" },
-  home: { emotionalTone: "neutral", iconKey: "house", colorKey: "indigo" },
-  career: { emotionalTone: "neutral", iconKey: "briefcase", colorKey: "slate" },
-  education: { emotionalTone: "hopeful", iconKey: "book", colorKey: "emerald" },
-  health: { emotionalTone: "reflective", iconKey: "cross", colorKey: "blue" },
-  loss: { emotionalTone: "difficult", iconKey: "moon", colorKey: "violet" },
-  achievement: { emotionalTone: "joyful", iconKey: "trophy", colorKey: "orange" },
-  challenge: { emotionalTone: "difficult", iconKey: "mountain", colorKey: "cyan" },
-  goal: { emotionalTone: "hopeful", iconKey: "target", colorKey: "lime" },
-  memory: { emotionalTone: "reflective", iconKey: "star", colorKey: "stone" },
-  custom: { emotionalTone: "neutral", iconKey: "dot", colorKey: "gray" }
+  relationship: { emotionalTone: "warm", iconKey: "heart", colorKey: "rose" },
+  family: { emotionalTone: "warm", iconKey: "users", colorKey: "emerald" },
+  travel: { emotionalTone: "reflective", iconKey: "plane", colorKey: "cyan" },
+  home: { emotionalTone: "neutral", iconKey: "house", colorKey: "stone" },
+  career: { emotionalTone: "neutral", iconKey: "briefcase", colorKey: "blue" },
+  education: { emotionalTone: "hopeful", iconKey: "book", colorKey: "violet" },
+  health: { emotionalTone: "reflective", iconKey: "pulse", colorKey: "lime" },
+  loss: { emotionalTone: "difficult", iconKey: "cross", colorKey: "slate" },
+  achievement: { emotionalTone: "joyful", iconKey: "trophy", colorKey: "amber" },
+  challenge: { emotionalTone: "difficult", iconKey: "mountain", colorKey: "orange" },
+  goal: { emotionalTone: "hopeful", iconKey: "target", colorKey: "indigo" },
+  custom: { emotionalTone: "neutral", iconKey: "dot", colorKey: "cyan" }
 };
 
 export function deriveEventVisuals(category: EventCategory): EventCategoryDefaults {

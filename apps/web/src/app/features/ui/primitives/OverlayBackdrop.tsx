@@ -7,7 +7,7 @@ export function OverlayBackdrop({ onClick, visible = true }: OverlayBackdropProp
   return (
     <div
       className={[
-        "fixed inset-0 bg-[var(--surface-overlay)] backdrop-blur-[18px] transition-opacity duration-150",
+        "fixed inset-0 bg-[var(--surface-overlay)] backdrop-blur-[16px] transition-opacity duration-[var(--motion-fast)] ease-[var(--ease-standard)]",
         visible ? "opacity-100" : "opacity-0"
       ].join(" ")}
       onClick={onClick}

@@ -50,4 +50,24 @@ describe("recurrence helpers", () => {
     expect(previews[0]?.id).toBe("recurring-preview:e1:2026");
     expect(previews[0]?.date).toBe("2026-07-10T00:00:00.000Z");
   });
+
+  it("renders recurring newborn previews with birthday icon language", () => {
+    const now = new Date("2026-06-01T12:00:00.000Z");
+    const previews = buildRecurringPreviewEvents(
+      [
+        makeEvent({
+          id: "newborn-1",
+          category: "newborn",
+          title: "Ava arrives",
+          date: "2024-09-10T00:00:00.000Z",
+          iconKey: "carriage",
+          colorKey: "rose"
+        })
+      ],
+      now
+    );
+
+    expect(previews).toHaveLength(1);
+    expect(previews[0]?.iconKey).toBe("cake");
+  });
 });

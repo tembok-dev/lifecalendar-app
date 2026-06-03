@@ -14,7 +14,7 @@ export function FloatingRailButton({ icon, label, active = false, onClick, hint 
       type="button"
       onClick={onClick}
       className={[
-        "group relative h-7 w-7 rounded-full backdrop-blur transition hover:text-zinc-100",
+        "ui-radius-pill group relative h-7 w-7 backdrop-blur transition hover:text-zinc-100",
         active ? "bg-surface/58 text-zinc-100" : "bg-surface/45 text-zinc-300/80"
       ].join(" ")}
       aria-label={label}
@@ -24,7 +24,7 @@ export function FloatingRailButton({ icon, label, active = false, onClick, hint 
         {label}
       </span>
       {hint ? (
-        <span className="pointer-events-none absolute right-9 top-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-surface/92 px-1.5 py-0.5 text-[10px] text-zinc-200/85 shadow-soft">
+        <span className="ui-radius-xs pointer-events-none absolute right-9 top-1/2 -translate-y-1/2 whitespace-nowrap bg-surface/92 px-1.5 py-0.5 text-[10px] text-zinc-200/85 shadow-soft">
           {hint}
         </span>
       ) : null}

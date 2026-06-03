@@ -15,7 +15,7 @@ export function ExpandableSection({ title, defaultOpen = false, compactLabel, op
   const open = controlledOpen ?? internalOpen;
 
   return (
-    <div className="rounded-[18px] border border-[var(--border-soft)] bg-white/[0.02]">
+    <div className="ui-radius-lg border border-[var(--border-soft)] bg-white/[0.02]">
       <button
         type="button"
         onClick={() => {

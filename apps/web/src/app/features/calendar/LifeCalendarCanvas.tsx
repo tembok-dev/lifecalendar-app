@@ -1,6 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import type { GetProfileCalendarResponse, LifeEvent } from "@lifecalendar/shared";
-import { CalendarLegend } from "./CalendarLegend";
 import { LifeCalendarGrid } from "./LifeCalendarGrid";
 import { WeekPopover } from "./WeekPopover";
 import { usePosterLayout } from "./hooks/usePosterLayout";
@@ -13,7 +12,6 @@ import { EventQuickAddPopover } from "./events/EventQuickAddPopover";
 import { SettingsModal } from "../settings/SettingsModal";
 import type { CalendarDisplayMode } from "./LifeCalendarGrid";
 import type { CalendarScaleMode } from "./hooks/useCalendarZoom";
-import { PopoverSurface } from "../ui/primitives/PopoverSurface";
 import { resolveCalendarDisplayMode } from "./utils/resolveCalendarDisplayMode";
 
 interface LifeCalendarCanvasProps {
@@ -65,7 +63,6 @@ export function LifeCalendarCanvas({
   const [selectedWeekIndex, setSelectedWeekIndex] = useState<number | null>(calendar.summary.currentWeekIndex);
   const [selectedAnchor, setSelectedAnchor] = useState<{ x: number; y: number; defaultDate: string; contextLabel: string } | null>(null);
   const [selectedEventsOverride, setSelectedEventsOverride] = useState<LifeEvent[] | null>(null);
-  const [legendAnchor, setLegendAnchor] = useState<{ x: number; y: number } | null>(null);
   const [eventModalState, setEventModalState] = useState<{
     mode: "create" | "edit";
     anchor: { x: number; y: number } | null;
@@ -215,9 +212,6 @@ export function LifeCalendarCanvas({
           totalWeeks={calendar.summary.totalWeeks}
           currentAgeYears={calendar.summary.currentAgeYears}
           upcomingCount={upcomingCount}
-          mode={zoom.mode}
-          onToggleMode={zoom.toggleMode}
-          onToggleInfo={(anchor) => setLegendAnchor((current) => (current ? null : anchor))}
           onQuickAdd={(anchor) => {
             requestAnimationFrame(() => {
               setEventModalState({
@@ -239,14 +233,18 @@ export function LifeCalendarCanvas({
             <CalendarStage scale={zoom.scale} contentRef={stageContentRef} fitContent={effectiveMode !== "months"}>
               <LifeCalendarGrid
                 weeks={calendar.weeks}
+                events={calendar.events}
+                recurringPreviewEvents={calendar.derived.currentYearUpcomingRecurringEvents}
                 currentWeekIndex={calendar.summary.currentWeekIndex}
                 currentAgeYears={calendar.summary.currentAgeYears}
                 displayMode={displayMode}
+                scaleMode={zoom.mode}
                 effectiveMode={effectiveMode}
                 initialDisplayMode={displayMode}
                 showYearMarkers={calendar.settings.showYearMarkers}
                 showEventMarkers={calendar.settings.showEventIcons}
                 onDisplayModeChange={setDisplayMode}
+                onToggleScaleMode={zoom.toggleMode}
                 onSelectWeek={(weekIndex, anchor, events) => {
                   if (events?.length === 1) {
                     const event = events[0];
@@ -298,17 +296,6 @@ export function LifeCalendarCanvas({
           {layoutMode === "horizontal" ? <ReflectionSpace selectedWeek={selectedWeek} /> : null}
         </main>
       </div>
-
-      <PopoverSurface
-        open={Boolean(legendAnchor)}
-        anchor={legendAnchor}
-        width={276}
-        onClose={() => setLegendAnchor(null)}
-        ariaLabel="Calendar legend"
-        showArrow={false}
-      >
-        <CalendarLegend />
-      </PopoverSurface>
 
       <WeekPopover
         week={selectedWeek}

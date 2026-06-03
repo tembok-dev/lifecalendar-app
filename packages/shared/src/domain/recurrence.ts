@@ -14,7 +14,7 @@ function impliesFamilyBirth(text: string): boolean {
 
 export function deriveRecurrenceDefaults(input: { category: EventCategory; title?: string | null; note?: string | null }): RecurrenceDefaults {
   const { category, title, note } = input;
-  if (category === "birthday" || category === "relationship") {
+  if (category === "birthday" || category === "relationship" || category === "newborn") {
     return { isRecurring: true, recurrenceType: "yearly" };
   }
   if (category === "family") {
@@ -27,4 +27,3 @@ export function deriveRecurrenceDefaults(input: { category: EventCategory; title
   }
   return { isRecurring: false, recurrenceType: null };
 }
-

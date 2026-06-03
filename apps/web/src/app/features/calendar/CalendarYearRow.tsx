@@ -53,7 +53,7 @@ export const CalendarYearRow = memo(function CalendarYearRow({
       className={["calendar-year-row group/year-row grid items-center gap-2 transition-[padding] duration-200", rowSpacingClass, currentRowClass].join(" ")}
       style={{ gridTemplateColumns: stageTemplateColumns }}
     >
-      <div className={["text-right text-xs transition-opacity duration-150", row.isCurrentAgeYear ? "calendar-current-age-label" : "text-muted"].join(" ")}>
+      <div className={["text-right text-xs transition-opacity duration-150", row.isCurrentAgeYear ? "calendar-current-age-label" : "text-[var(--text-muted)]"].join(" ")}>
         {showYearMarkers ? (
           row.isCurrentAgeYear ? (
             <span className="inline-flex items-center justify-end gap-1">

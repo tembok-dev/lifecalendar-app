@@ -11,10 +11,11 @@ export function FloatingTextarea({ className, leadingIcon, ...props }: FloatingT
       <textarea
         {...props}
         className={[
-          "floating-field min-h-[120px] resize-none px-4 py-3 text-[14px]",
+          "floating-field resize-none px-4 py-3 text-[14px]",
           leadingIcon ? "pl-12" : "",
           className ?? ""
         ].join(" ")}
+        style={{ minHeight: "120px" }}
       />
     </div>
   );

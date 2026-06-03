@@ -19,9 +19,10 @@ export function FloatingInput({ className, fieldSize = "normal", leadingIcon, tr
           type === "date" ? "floating-date-input" : "",
           leadingIcon ? "pl-12" : "",
           trailingIcon ? "pr-12" : "",
-          fieldSize === "large" ? "h-[58px] text-[16px]" : "h-[46px]",
+          fieldSize === "large" ? "text-[16px]" : "",
           className ?? ""
         ].join(" ")}
+        style={{ height: fieldSize === "large" ? "var(--field-height-lg)" : "var(--field-height-md)" }}
       />
     </div>
   );

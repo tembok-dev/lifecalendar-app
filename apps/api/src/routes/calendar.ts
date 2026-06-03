@@ -35,7 +35,9 @@ export async function calendarRoutes(app: FastifyInstance) {
       profile,
       settings,
       summary: calendar.summary,
-      weeks: calendar.weeks
+      weeks: calendar.weeks,
+      events: calendar.events,
+      derived: calendar.derived
     };
   });
 }

@@ -1,5 +1,36 @@
 # Changelog
 
+## v0.7.6B - Tooltip Unification + Cell Hover Cleanup
+- Added a reusable portaled tooltip primitive with delayed reveal and viewport-safe positioning.
+- Replaced visible native browser tooltip usage in calendar event cells, rail popover rows, and poster nav icons with the shared tooltip surface.
+- Simplified multi-event cell hover so it stays compact: count by default, stacked icons on hover, small tooltip preview only.
+- Kept full event details in click flows and left rail popover grouping/sorting behavior stable.
+
+## v0.7.6 - Canonical Calendar Payload Shape
+- Strengthened `GET /profiles/:profileId/calendar` so the API/shared calendar factory now returns:
+- full stored profile events
+- visible in-range calendar weeks
+- derived canonical event slices (`inRangeEvents`, `currentYearEvents`, `currentYearUpcomingRecurringEvents`)
+- Removed the extra frontend events fetch and stopped treating React-side derivation as the source of truth for recurring/current-year event slices.
+- Kept frontend responsibility focused on rendering/grouping/composition rather than product-correctness event logic.
+
+## v0.7.5B - Pre-Birth Event Storage Fix
+- Allowed negative `weekIndex` values at the API validation layer so memories dated before the profile birth date can still be stored.
+- Kept rendering behavior unchanged: out-of-range/pre-birth events remain ignored by the visible life-week grid and recurring previews continue to be date-driven.
+- Updated the web app to load the full stored event list alongside the calendar response so pre-birth events still appear in the Events modal and can generate current-year recurring previews.
+
+## v0.7.5 - Primitive QA + Token Audit
+- Audited shared modal, popover, field, toggle, chip, and event-list primitives for token usage consistency.
+- Replaced additional hardcoded radius usage in shared UI with token-backed radius utilities.
+- Tightened modal body spacing and width token usage without changing behavior or layout structure.
+- Kept current visuals close while reducing leftover one-off styling in the shared primitive layer.
+
+## v0.7.4 - Design Tokens + Visual Rules Lock
+- Centralized semantic design tokens for color, radius, shadows, motion, spacing, and shared overlay/component sizes in `apps/web/src/index.css`.
+- Added light-theme scaffold via semantic token overrides without redesigning light mode yet.
+- Updated shared floating primitives (`ModalSurface`, `PopoverSurface`, fields, toggle, chips, event list row) to consume shared tokens more directly.
+- Locked visual rules and anti-patterns in docs so future UI work stays inside the Life Calendar design language.
+
 ## v0.7.3 - Event List Modal + Safe Actions
 - Added reusable `EventListItem` for modal/list event rows with icon, date, category, recurring marker, upcoming marker, and optional note preview.
 - Redesigned the global Events modal to use the floating modal shell plus `EventListItem` rows sorted newest first.

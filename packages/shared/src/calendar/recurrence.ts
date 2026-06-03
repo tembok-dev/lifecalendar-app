@@ -32,7 +32,8 @@ export function buildRecurringPreviewEvents(events: LifeEvent[], now: Date): Lif
     previews.push({
       ...event,
       id: `recurring-preview:${event.id}:${currentYear}`,
-      date: occurrenceDate
+      date: occurrenceDate,
+      iconKey: event.category === "newborn" ? "cake" : event.iconKey
     });
   }
 

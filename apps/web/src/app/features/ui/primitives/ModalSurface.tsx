@@ -11,13 +11,19 @@ interface ModalSurfaceProps extends PropsWithChildren {
   size?: "compact" | "default" | "wide";
   maxWidthPx?: number;
   maxHeightPx?: number;
-  radiusPx?: number;
+  radiusPx?: number | string;
 }
 
 const SIZE_PX: Record<NonNullable<ModalSurfaceProps["size"]>, number> = {
   compact: 420,
   default: 520,
   wide: 720
+};
+
+const SIZE_VAR: Record<NonNullable<ModalSurfaceProps["size"]>, string> = {
+  compact: "var(--modal-width-compact)",
+  default: "var(--modal-width-default)",
+  wide: "var(--modal-width-wide)"
 };
 
 export function ModalSurface({
@@ -28,7 +34,7 @@ export function ModalSurface({
   size = "default",
   maxWidthPx,
   maxHeightPx = 720,
-  radiusPx = 22,
+  radiusPx = "var(--radius-modal)",
   children
 }: ModalSurfaceProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -77,20 +83,25 @@ export function ModalSurface({
         ref={ref}
         tabIndex={-1}
         className={[
-          "modal-panel relative z-[1] w-full outline-none transition-[opacity,transform] duration-150 ease-out",
+          "modal-panel relative z-[1] w-full outline-none transition-[opacity,transform] duration-[var(--motion-base)] ease-[var(--ease-out-soft)]",
           visible ? "translate-y-0 scale-100 opacity-100" : "translate-y-2 scale-[0.985] opacity-0",
           "overflow-hidden backdrop-blur-[18px]",
           className ?? ""
         ].join(" ")}
         style={{
-          maxWidth: `min(${maxWidthPx ?? SIZE_PX[size]}px, calc(100vw - 32px))`,
+          maxWidth: maxWidthPx
+            ? `min(${maxWidthPx}px, calc(100vw - 32px))`
+            : `min(${SIZE_VAR[size]}, calc(100vw - 32px))`,
           maxHeight: `min(${maxHeightPx}px, calc(100vh - 32px))`,
-          borderRadius: `${radiusPx}px`
+          borderRadius: typeof radiusPx === "number" ? `${radiusPx}px` : radiusPx
         }}
         role="dialog"
         aria-label={ariaLabel}
       >
-        <div className="flex min-h-0 flex-col p-5 sm:p-6" style={{ maxHeight: `min(${maxHeightPx}px, calc(100vh - 32px))` }}>
+        <div
+          className="flex min-h-0 flex-col p-5 sm:p-6"
+          style={{ maxHeight: `min(${maxHeightPx}px, calc(100vh - 32px))`, padding: "var(--modal-padding)" }}
+        >
           {children}
         </div>
       </div>

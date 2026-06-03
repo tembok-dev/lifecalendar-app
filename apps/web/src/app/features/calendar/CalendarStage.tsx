@@ -4,6 +4,7 @@ import { CalendarYearRow } from "./CalendarYearRow";
 import type { VisualCalendarRow } from "./utils/visualCalendarRows";
 
 interface CalendarStageProps {
+  appearance?: "normal" | "print";
   mode: "weeks" | "months";
   rows: VisualCalendarRow[];
   colCount: number;
@@ -20,6 +21,7 @@ interface CalendarStageProps {
 }
 
 export function CalendarStage({
+  appearance = "normal",
   mode,
   rows,
   colCount,
@@ -46,7 +48,7 @@ export function CalendarStage({
       : `var(--calendar-year-label-width) minmax(0,1fr) var(--calendar-add-gap-width) var(--calendar-event-rail-width)`;
 
   return (
-    <div className={mode === "months" ? "w-full" : ""}>
+    <div data-calendar-stage="true" data-calendar-appearance={appearance} className={mode === "months" ? "w-full" : ""}>
       <CalendarAxisLabels
         mode={mode}
         colCount={colCount}

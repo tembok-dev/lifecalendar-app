@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type {
-  CreateLifeEventInput,
-  GetProfileCalendarResponse,
-  PatchAppSettingsInput,
-  PatchLifeEventInput,
-  PatchProfileInput,
-  Profile
-} from "@lifecalendar/shared";
+import type { CreateLifeEventInput, GetProfileCalendarResponse, PatchAppSettingsInput, PatchLifeEventInput, PatchProfileInput, Profile } from "@lifecalendar/shared";
 import { getWeekIndexFromDate } from "@lifecalendar/shared";
 import { apiClient } from "../../lib/api/client";
 

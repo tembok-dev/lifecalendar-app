@@ -28,6 +28,7 @@ import {
   getYearlyOccurrenceDate,
   isOccurrenceAfterToday,
   type BuiltCalendar,
+  type CalendarDerivedData,
   type CalendarSummary,
   type CalendarWeek
 } from "./calendar/index.js";
@@ -75,7 +76,7 @@ export {
 
 export type { AppSettings, LifeEvent, Profile };
 export type { ColorKey, EmotionalTone, EventCategory, IconKey };
-export type { BuiltCalendar, CalendarSummary, CalendarWeek };
+export type { BuiltCalendar, CalendarDerivedData, CalendarSummary, CalendarWeek };
 
 export type {
   ApiHealthResponse,

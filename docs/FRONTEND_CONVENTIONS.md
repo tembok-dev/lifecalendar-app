@@ -29,8 +29,19 @@ Visual direction lives in `docs/DESIGN_SYSTEM.md`.
 - Event add/edit/delete actions should stay in hooks/controllers and be passed down to popover/form components.
 - Recurrence date math and preview construction must stay centralized in shared helpers (`packages/shared/src/calendar/recurrence.ts`), not duplicated in React components.
 - Calendar event presentation mapping (real vs upcoming preview labels/order/tooltips) must be centralized in one display helper and reused by cell + rail renderers.
+- The calendar API payload is the canonical source for:
+- full stored profile events
+- in-range grid events
+- current-year recurring preview slices / derived event metadata
+- Frontend should compose and group that data for rendering, but should not re-own product correctness rules already available from the API/shared layer.
 - Anchor-based floating surface placement should use shared positioning helpers (`computeAnchoredPopoverPosition`) instead of ad-hoc per-component math.
 - Floating popovers must render through a portal outside transformed/scaled containers so viewport-based positioning remains correct.
+
+## Tokens
+- `apps/web/src/index.css` semantic tokens are the primary styling source of truth.
+- New components must use shared tokens for color, radius, motion, spacing, and sizes where practical.
+- Prefer CSS variables over ad-hoc Tailwind literals when the value is part of the design system.
+- Avoid long component-specific Tailwind class piles when a primitive or token-backed utility already exists.
 
 ## Overlay Primitives (Mandatory)
 - Use shared primitives for interaction surfaces:
@@ -61,6 +72,9 @@ Visual direction lives in `docs/DESIGN_SYSTEM.md`.
 - Modal tab switching should use the shared `TabRail` when a modal has multiple content groups.
 - Destructive event actions must only appear inside the event edit modal and require confirmation.
 - Modal/list event rows should use the shared `EventListItem` instead of ad-hoc bordered boxes.
+- Visible UI should use the shared `Tooltip` / `TooltipSurface` primitive instead of native browser `title` tooltips.
+- Calendar cell hover is preview-only. Full event details/lists belong to click flows, not hover cards.
+- Shared primitives are mandatory for modal/popover/field surfaces before introducing custom feature-level UI wrappers.
 
 ## Icons
 - Use `lucide-react` for UI/navigation/action icons.

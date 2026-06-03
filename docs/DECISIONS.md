@@ -73,3 +73,21 @@ Do not move to SVG unless export/precision/performance demands it.
 - Life events now support `isRecurring` and `recurrenceType` (`yearly` currently).
 - Category-based defaults are applied on create, and on category change when recurrence was not explicitly set by the user.
 - Current-year upcoming recurring occurrences are rendered as anticipation previews only (no completed-memory semantics).
+
+## D-018 Semantic Design Tokens
+- Semantic design tokens defined in `apps/web/src/index.css` are the styling source of truth for color, radius, motion, spacing, and shared surface sizes.
+- Future UI changes should prefer token edits over component-specific magic values.
+- This token system prepares future light mode by overriding semantic variables rather than rewriting component markup.
+
+## D-019 Floating Surface Behavior
+- Floating modals and popovers use shared primitives plus shared motion rules.
+- Anchored floating surfaces must portal to `document.body` when used inside transformed/scaled containers.
+- Destructive event actions remain inside edit modal flows and require confirmation.
+
+## D-020 Calendar Payload Ownership
+- The API/shared calendar factory owns canonical event derivation for calendar responses.
+- `GET /profiles/:profileId/calendar` should provide:
+- full stored events needed by modal/list surfaces
+- visible in-range calendar weeks
+- derived event slices needed for correctness, such as current-year recurring previews
+- Frontend remains responsible for rendering composition, grouping, and interaction, but should not recompute business-critical event slices when the shared/API layer can provide them.

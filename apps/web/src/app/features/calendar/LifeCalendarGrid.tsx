@@ -1,4 +1,4 @@
-import { ArrowRight, LucideArrowLeft } from "lucide-react";
+import { ArrowRight, CalendarDays, LucideArrowLeft, Scan } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CalendarWeek, LifeEvent } from "@lifecalendar/shared";
 import type { CSSProperties } from "react";
@@ -11,19 +11,26 @@ import { ModalBody } from "../ui/primitives/ModalBody";
 import { ModalFooter } from "../ui/primitives/ModalFooter";
 import { ModalHeader } from "../ui/primitives/ModalHeader";
 import { ModalSurface } from "../ui/primitives/ModalSurface";
+import type { CalendarScaleMode } from "./hooks/useCalendarZoom";
 
 export type CalendarDisplayMode = "auto" | "weeks" | "months";
+export type CalendarStageAppearance = "normal" | "print";
 
 interface LifeCalendarGridProps {
   weeks: CalendarWeek[];
+  events: LifeEvent[];
+  recurringPreviewEvents: LifeEvent[];
   currentWeekIndex: number;
   currentAgeYears: number;
   displayMode?: CalendarDisplayMode;
+  stageAppearance?: CalendarStageAppearance;
+  scaleMode?: CalendarScaleMode;
   effectiveMode?: CalendarEffectiveMode;
   initialDisplayMode?: CalendarDisplayMode;
   showYearMarkers?: boolean;
   showEventMarkers?: boolean;
   onDisplayModeChange?: (mode: CalendarDisplayMode) => void;
+  onToggleScaleMode?: () => void;
   onSelectWeek: (weekIndex: number, anchor: { x: number; y: number; defaultDate: string; contextLabel: string }, events?: LifeEvent[]) => void;
   onSelectRowDate: (anchor: { x: number; y: number; defaultDate: string; contextLabel: string }) => void;
   onRequestEditEvent: (event: LifeEvent, contextLabel: string) => void;
@@ -31,13 +38,18 @@ interface LifeCalendarGridProps {
 
 export function LifeCalendarGrid({
   weeks,
+  events,
+  recurringPreviewEvents,
   currentWeekIndex,
   displayMode: forcedDisplayMode,
+  stageAppearance = "normal",
+  scaleMode = "fit-width",
   effectiveMode: parentEffectiveMode,
   initialDisplayMode = "auto",
   showYearMarkers = true,
   showEventMarkers = true,
   onDisplayModeChange,
+  onToggleScaleMode,
   onSelectWeek,
   onSelectRowDate,
   onRequestEditEvent
@@ -73,10 +85,12 @@ export function LifeCalendarGrid({
     () =>
       buildVisualCalendarRows({
         weeks,
+        events,
+        recurringPreviewEvents,
         currentWeekIndex,
         mode: effectiveMode
       }),
-    [weeks, currentWeekIndex, effectiveMode]
+    [weeks, events, recurringPreviewEvents, currentWeekIndex, effectiveMode]
   );
 
   const currentLifeYear = Math.floor(currentWeekIndex / 52);
@@ -101,13 +115,11 @@ export function LifeCalendarGrid({
 
   const allEvents = useMemo(() => {
     const unique = new Map<string, LifeEvent>();
-    for (const week of weeks) {
-      for (const event of week.events) {
-        unique.set(event.id, event);
-      }
+    for (const event of events) {
+      unique.set(event.id, event);
     }
     return Array.from(unique.values()).sort((a, b) => b.date.localeCompare(a.date));
-  }, [weeks]);
+  }, [events]);
 
   const gridStyle = {
     "--calendar-cell-width": "13px",
@@ -130,8 +142,17 @@ export function LifeCalendarGrid({
       style={gridStyle}
     >
       <div className="*:absolute text-xs">
-        <label className="flex items-center gap-2 text-muted" style={{ top: 0, left: 52 }}>
-          <span className="text-xs">View</span>
+        <button
+          type="button"
+          aria-label={scaleMode === "fit-width" ? "Fit width" : "Contain"}
+          onClick={() => onToggleScaleMode?.()}
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-300/20 bg-[rgba(16,22,27,0.85)] text-[var(--text-muted)] transition hover:border-zinc-200/30 hover:text-[var(--text-secondary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-200/70"
+          style={{ top: 0, left: 12 }}
+        >
+          {scaleMode === "fit-width" ? <CalendarDays size={14} /> : <Scan size={14} />}
+        </button>
+        <label className="flex items-center gap-2 text-[var(--text-muted)]" style={{ top: 0, left: 52 }}>
+          <span className="text-xs text-[var(--text-muted)]">View</span>
           <select
             value={displayMode}
             onChange={(event) => {
@@ -139,21 +160,22 @@ export function LifeCalendarGrid({
               setDisplayMode(nextMode);
               onDisplayModeChange?.(nextMode);
             }}
-            className="rounded-md border border-zinc-300/20 bg-[rgba(16,22,27,0.85)] px-2 py-1 text-xs text-zinc-200 outline-none"
+            className="rounded-md border border-zinc-300/20 bg-[rgba(16,22,27,0.85)] px-2 py-1 text-xs text-[var(--text-secondary)] outline-none"
           >
             <option value="auto">Auto</option>
             <option value="weeks">Weeks</option>
             <option value="months">Months</option>
           </select>
-          <ArrowRight size={14}/>
+          <ArrowRight size={14} className="text-[var(--text-muted)]" />
         </label>
-        <span className="flex items-center justify-center gap-3 text-muted" style={{ top: 104, left: -16, transform: "rotate(-90deg)" }}>
-          <LucideArrowLeft size={14} />
+        <span className="flex items-center justify-center gap-3 text-[var(--text-muted)]" style={{ top: 104, left: -16, transform: "rotate(-90deg)" }}>
+          <LucideArrowLeft size={14} className="text-[var(--text-muted)]" />
           Years
         </span>
       </div>
 
       <CalendarStage
+        appearance={stageAppearance}
         mode={effectiveMode}
         rows={visualRows}
         colCount={colCount}
@@ -207,11 +229,11 @@ export function LifeCalendarGrid({
           <button
             type="button"
             onClick={() => setEventsModalOpen(false)}
-            className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+            className="ui-radius-pill border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
           >
             Close
           </button>
-          <span className="rounded-full bg-white/[0.05] px-3 py-1 text-[11px] text-[var(--text-muted)]">{allEvents.length} total</span>
+          <span className="ui-radius-pill bg-white/[0.05] px-3 py-1 text-[11px] text-[var(--text-muted)]">{allEvents.length} total</span>
         </ModalFooter>
       </ModalSurface>
     </div>

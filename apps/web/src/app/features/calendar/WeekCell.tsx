@@ -1,18 +1,5 @@
 import type { CalendarWeek } from "@lifecalendar/shared";
-import { EVENT_COLOR_CONTRAST_ICON_CLASS, EVENT_COLOR_FILL_CLASS, EVENT_COLOR_RING_CLASS, resolveEventIcon } from "./utils/eventIcons";
-
-function getFutureOpacity(lifeYearDelta: number): string {
-  if (lifeYearDelta <= 0) {
-    return "";
-  }
-  if (lifeYearDelta <= 5) {
-    return "opacity-85";
-  }
-  if (lifeYearDelta <= 15) {
-    return "opacity-68";
-  }
-  return "opacity-48";
-}
+import { EVENT_COLOR_FILL_CLASS, resolveEventContrastIconClass, resolveEventFillClass, resolveEventIcon, resolveEventRingClass } from "./utils/eventIcons";
 
 interface WeekCellProps {
   week: CalendarWeek;
@@ -43,7 +30,6 @@ export function WeekCell({
   const hasEvents = events.length > 0;
 
   const weekLifeYear = Math.floor(week.weekIndex / 52);
-  const lifeYearDelta = weekLifeYear - currentLifeYear;
   const inCurrentLifeYear = weekLifeYear === currentLifeYear;
   const isAnticipation = hasEvents && week.status === "future" && inCurrentLifeYear;
 
@@ -54,12 +40,12 @@ export function WeekCell({
         ? "week-cell--current"
         : inCurrentLifeYear
           ? "week-cell--future-current-year"
-          : `week-cell--future ${getFutureOpacity(lifeYearDelta)}`;
+          : "week-cell--future";
 
   const EventIcon = firstEvent ? resolveEventIcon(firstEvent.category, firstEvent.iconKey) : null;
-  const eventFillClass = firstEvent ? EVENT_COLOR_FILL_CLASS[firstEvent.colorKey] ?? "bg-zinc-400/28" : "bg-zinc-400/28";
-  const eventIconClass = firstEvent ? EVENT_COLOR_CONTRAST_ICON_CLASS[firstEvent.colorKey] ?? "text-zinc-950" : "text-zinc-950";
-  const anticipationRingClass = firstEvent ? EVENT_COLOR_RING_CLASS[firstEvent.colorKey] ?? "ring-zinc-300/45" : "ring-zinc-300/45";
+  const eventFillClass = firstEvent ? resolveEventFillClass(firstEvent.category, firstEvent.colorKey) : "bg-zinc-400/28";
+  const eventIconClass = firstEvent ? resolveEventContrastIconClass(firstEvent.category, firstEvent.colorKey) : "text-zinc-950";
+  const anticipationRingClass = firstEvent ? resolveEventRingClass(firstEvent.category, firstEvent.colorKey) : "ring-zinc-300/45";
 
   // TODO(stage-5 recurrence): once recurrence fields exist, only show anticipation on upcoming recurring events
   // in current calendar year; render first occurrence only for past recurring entries.
@@ -98,8 +84,8 @@ export function WeekCell({
 
       {events.length === 2 && firstEvent && secondEvent ? (
         <span className="absolute inset-[2px] z-[1] grid grid-cols-2 gap-[1px]">
-          <span className={["rounded-[1px]", EVENT_COLOR_FILL_CLASS[firstEvent.colorKey] ?? "bg-zinc-400/28"].join(" ")} />
-          <span className={["rounded-[1px]", EVENT_COLOR_FILL_CLASS[secondEvent.colorKey] ?? "bg-zinc-400/28"].join(" ")} />
+          <span className={["rounded-[1px]", resolveEventFillClass(firstEvent.category, firstEvent.colorKey)].join(" ")} />
+          <span className={["rounded-[1px]", resolveEventFillClass(secondEvent.category, secondEvent.colorKey)].join(" ")} />
         </span>
       ) : null}
 

@@ -38,7 +38,7 @@ export function WeekPopover({ week, eventsOverride, anchor, onClose, onRequestCr
     <PopoverSurface open={Boolean(anchor && week)} anchor={anchor} width={280} onClose={onClose} ariaLabel="Week details and events">
       <p className="font-medium text-zinc-100">{anchor.contextLabel}</p>
       <p className="mt-0.5 text-[10px] text-zinc-300/78">
-        {new Date(anchor.defaultDate).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}
+        {new Date(anchor.defaultDate).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}
       </p>
 
       <EventList

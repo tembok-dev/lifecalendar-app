@@ -1,18 +1,15 @@
-import { CalendarDays, Cog, Info, Plus, Scan } from "lucide-react";
-import type { CalendarScaleMode } from "../hooks/useCalendarZoom";
+import { Cog, Plus } from "lucide-react";
 import { useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { Tooltip } from "../../ui/primitives/TooltipSurface";
 
 interface PosterNavIconsProps {
-  mode: CalendarScaleMode;
-  onToggleMode: () => void;
-  onToggleInfo: (anchor: { x: number; y: number }) => void;
   onQuickAdd: (anchor: { x: number; y: number }) => void;
   onOpenSettings: () => void;
   showHint: boolean;
   compact?: boolean;
 }
 
-export function PosterNavIcons({ mode, onToggleMode, onToggleInfo, onQuickAdd, onOpenSettings, showHint, compact = false }: PosterNavIconsProps) {
+export function PosterNavIcons({ onQuickAdd, onOpenSettings, showHint, compact = false }: PosterNavIconsProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [pointerX, setPointerX] = useState<number | null>(null);
@@ -29,25 +26,13 @@ export function PosterNavIcons({ mode, onToggleMode, onToggleInfo, onQuickAdd, o
         onClick: (event: MouseEvent<HTMLButtonElement>) => onQuickAdd({ x: event.clientX, y: event.clientY })
       },
       {
-        key: "legend",
-        label: "Legend",
-        icon: <Info size={18} strokeWidth={2} />,
-        onClick: (event: MouseEvent<HTMLButtonElement>) => onToggleInfo({ x: event.clientX, y: event.clientY })
-      },
-      {
-        key: "mode",
-        label: mode === "fit-width" ? "Fit width" : "Contain",
-        icon: mode === "fit-width" ? <CalendarDays size={18} strokeWidth={2} /> : <Scan size={18} strokeWidth={2} />,
-        onClick: () => onToggleMode()
-      },
-      {
         key: "settings",
         label: "Settings",
         icon: <Cog size={18} strokeWidth={2} />,
         onClick: () => onOpenSettings()
       }
     ],
-    [mode, onOpenSettings, onQuickAdd, onToggleInfo, onToggleMode]
+    [onOpenSettings, onQuickAdd]
   );
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -99,24 +84,25 @@ export function PosterNavIcons({ mode, onToggleMode, onToggleInfo, onQuickAdd, o
         const range = 120;
         const strength = Math.max(0, 1 - Math.abs(delta) / range);
         const pullX = pointerX === null ? 0 : (delta / range) * 8 * strength;
+        const tooltipLabel = item.key === "quick-add" && showHint ? "Add memories by clicking a week or using +" : item.label;
         return (
-          <button
-            key={item.key}
-            ref={(element) => {
-              buttonRefs.current[index] = element;
-            }}
-            type="button"
-            aria-label={item.label}
-            title={item.key === "quick-add" && showHint ? "Add memories by clicking a week or using +" : item.label}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-[rgba(227,235,244,0.62)] transition-[color,transform,opacity,filter] duration-200 hover:text-[rgba(244,248,251,0.98)] focus-visible:text-[rgba(244,248,251,0.98)] focus-visible:outline-none"
-            style={{ transform: `translateX(${pullX}px) translateY(${distance === 0 ? "-2px" : "0px"}) scale(${scale})`, opacity, filter: glow }}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onFocus={() => setFocusedIndex(index)}
-            onBlur={() => setFocusedIndex(null)}
-            onClick={item.onClick}
-          >
-            {item.icon}
-          </button>
+          <Tooltip key={item.key} content={tooltipLabel} className="inline-flex" tooltipClassName="max-w-[220px]" showArrow={false}>
+            <button
+              ref={(element) => {
+                buttonRefs.current[index] = element;
+              }}
+              type="button"
+              aria-label={tooltipLabel}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-[rgba(227,235,244,0.62)] transition-[color,transform,opacity,filter] duration-200 hover:text-[rgba(244,248,251,0.98)] focus-visible:text-[rgba(244,248,251,0.98)] focus-visible:outline-none"
+              style={{ transform: `translateX(${pullX}px) translateY(${distance === 0 ? "-2px" : "0px"}) scale(${scale})`, opacity, filter: glow }}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onFocus={() => setFocusedIndex(index)}
+              onBlur={() => setFocusedIndex(null)}
+              onClick={item.onClick}
+            >
+              {item.icon}
+            </button>
+          </Tooltip>
         );
       })}
       <div className="sr-only" aria-live="polite">

@@ -91,7 +91,7 @@ export function SettingsModal({
   }
 
   return (
-    <ModalSurface open={open} onClose={onClose} ariaLabel="Settings" size="default" maxWidthPx={560} maxHeightPx={680} radiusPx={20}>
+    <ModalSurface open={open} onClose={onClose} ariaLabel="Settings" size="default" maxWidthPx={560} maxHeightPx={680}>
       <ModalHeader
         title="Settings"
         subtitle="Tune the poster quietly."
@@ -143,7 +143,7 @@ export function SettingsModal({
       </ModalBody>
 
       <ModalFooter>
-        <button type="button" onClick={onClose} className="rounded-full border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]">
+        <button type="button" onClick={onClose} className="ui-radius-pill border border-[var(--border-soft)] px-4 py-2 text-[12px] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]">
           Cancel
         </button>
         <button
@@ -176,7 +176,7 @@ export function SettingsModal({
               setSaving(false);
             }
           }}
-          className="rounded-full bg-[linear-gradient(135deg,rgba(112,232,224,0.94),rgba(83,185,205,0.9))] px-5 py-2 text-[12px] font-medium text-slate-950 shadow-[0_0_24px_var(--accent-primary-glow)] disabled:opacity-60"
+          className="ui-radius-pill bg-[linear-gradient(135deg,rgba(112,232,224,0.94),rgba(83,185,205,0.9))] px-5 py-2 text-[12px] font-medium text-slate-950 shadow-[0_0_24px_var(--accent-primary-glow)] disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save changes"}
         </button>

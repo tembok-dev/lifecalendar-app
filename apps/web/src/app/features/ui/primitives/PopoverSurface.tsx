@@ -50,10 +50,6 @@ export function PopoverSurface({
       return;
     }
 
-    if (!open) {
-      return;
-    }
-
     const onPointerDown = (event: MouseEvent) => {
       const target = event.target as Node;
       if (!ref.current?.contains(target)) {
@@ -132,8 +128,7 @@ export function PopoverSurface({
     <div
       ref={ref}
       className={[
-        "fixed z-[100] border border-[rgba(220,230,240,0.08)] bg-[rgba(16,22,27,0.92)] shadow-[0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-[16px]",
-        "rounded-[18px] p-[14px] text-[13px] text-zinc-300 motion-safe:transition-[opacity,transform] motion-safe:duration-150",
+        "popover-panel fixed z-[100] backdrop-blur-[16px] text-[13px] motion-safe:transition-[opacity,transform] motion-safe:duration-[var(--motion-fast)] motion-safe:ease-[var(--ease-standard)]",
         isPositioned ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0",
         className ?? ""
       ].join(" ")}

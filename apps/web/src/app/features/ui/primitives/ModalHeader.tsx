@@ -24,7 +24,7 @@ export function ModalHeader({ title, subtitle, ornament, onClose, children }: Mo
           type="button"
           onClick={onClose}
           aria-label="Close modal"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border-soft)] bg-white/[0.02] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+          className="ui-radius-pill flex h-8 w-8 shrink-0 items-center justify-center border border-[var(--border-soft)] bg-white/[0.02] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
         >
           <X size={16} />
         </button>

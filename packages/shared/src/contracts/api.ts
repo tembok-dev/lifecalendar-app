@@ -1,7 +1,7 @@
 import type { EventCategory } from "../domain/event-categories.js";
 import type { RecurrenceType } from "../domain/recurrence.js";
 import type { AppSettings, LifeEvent, Profile } from "../domain/models.js";
-import type { CalendarSummary, CalendarWeek } from "../calendar/types.js";
+import type { CalendarDerivedData, CalendarSummary, CalendarWeek } from "../calendar/types.js";
 
 export interface CreateProfileInput {
   name: string;
@@ -72,6 +72,8 @@ export interface GetProfileCalendarResponse {
   settings: AppSettings;
   summary: CalendarSummary;
   weeks: CalendarWeek[];
+  events: LifeEvent[];
+  derived: CalendarDerivedData;
 }
 
 export interface MutationProfileResponse {
