@@ -19,4 +19,5 @@
 - Use shared tokens and overlay primitives before adding one-off Tailwind styling.
 
 ## Product Reminder
-Life Calendar is an emotional time poster, not productivity software.
+LifeStep is an emotional time poster, not productivity software.
+- The Life Calendar is the core grid mechanic inside the product.

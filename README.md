@@ -1,10 +1,12 @@
-# Life Calendar App
+# LifeStep
 
 Stage: `v0.5.0` minimal onboarding overlay.
 
+LifeStep is the product. The Life Calendar is the core grid mechanic that powers the experience.
+
 ## Current Scope
 - Working calendar engine and API-backed canvas flow
-- Poster-first canvas UI
+- Poster-first LifeStep canvas UI
 - First-run onboarding overlay for profile creation (name + birthdate)
 - Existing profile auto-load (latest profile for now)
 

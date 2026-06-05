@@ -1,6 +1,7 @@
-import type { Profile } from "@lifecalendar/shared";
-import { Aperture, CalendarClock } from "lucide-react";
+import { APP_NAME, type Profile } from "@lifecalendar/shared";
+import { CalendarClock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BrandAsset } from "../../brand/BrandAsset";
 import { LifeProgressRail } from "./LifeProgressRail";
 import { PosterNavIcons } from "./PosterNavIcons";
 
@@ -56,18 +57,23 @@ export function PosterTopRail({
 
       <div className="mx-auto mt-6 w-full max-w-7xl">
         <div className="relative z-20 flex w-full justify-between" style={{ minHeight: "var(--poster-identity-height)" }}>
-          <div className="flex items-start gap-1.5 text-sm text-zinc-300/90">
-            <Aperture size={20} strokeWidth={1.7} className="opacity-92" />
-            <span className="leading-3">
-              Life
-              <br />
-              Calendar
-            </span>
+          <div className="relative flex items-start">
+            <div className="pointer-events-none absolute -left-4 -top-5 h-16 w-16 text-[var(--color-brand-watermark)] opacity-70">
+              <BrandAsset asset="mark" className="h-full w-full scale-75" />
+            </div>
+            <BrandAsset
+              asset="logo"
+              className="relative z-10 h-[25px] w-[100px] text-[var(--color-brand-primary)]"
+              label={APP_NAME}
+            />
           </div>
 
-          <div className="flex flex-col items-end gap-2 text-right">
+          <div className="relative flex flex-col items-end gap-2 text-right">
+            <div className="pointer-events-none absolute -right-3 -top-8 h-[74px] w-[74px] text-[var(--color-brand-watermark)]">
+              <BrandAsset asset="mark" className="h-full w-full" />
+            </div>
             <p className="text-balance text-4xl font-semibold leading-[0.95] tracking-tight text-zinc-100">{profile.name}</p>
-            <div className="text-xs text-zinc-400">
+            <div className="relative z-10 text-xs text-zinc-400">
               <p>{currentAgeYears} years old</p>
               <p className="mt-0.5 inline-flex items-center gap-1">
                 <CalendarClock className="h-3.5 w-3.5" />

@@ -1,6 +1,10 @@
 # Design System
 
-This file is the single source of truth for Life Calendar UI/UX.
+This file is the single source of truth for LifeStep UI/UX.
+
+Brand naming rule:
+- `LifeStep` is the product name.
+- `Life Calendar` refers to the underlying grid mechanic when that distinction matters.
 
 ## Product Feel
 - Interactive cinematic life poster.

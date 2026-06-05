@@ -1,4 +1,4 @@
-import { APP_NAME, APP_VERSION } from "./constants.js";
+import { APP_NAME, APP_TAGLINE, APP_VERSION } from "./constants.js";
 import {
   EVENT_CATEGORIES,
   EVENT_CATEGORY_DEFAULTS,
@@ -51,6 +51,7 @@ import type {
 
 export {
   APP_NAME,
+  APP_TAGLINE,
   APP_VERSION,
   EVENT_CATEGORIES,
   EVENT_CATEGORY_DEFAULTS,

@@ -91,3 +91,8 @@ Do not move to SVG unless export/precision/performance demands it.
 - visible in-range calendar weeks
 - derived event slices needed for correctness, such as current-year recurring previews
 - Frontend remains responsible for rendering composition, grouping, and interaction, but should not recompute business-critical event slices when the shared/API layer can provide them.
+
+## D-021 Brand Naming Boundary
+- `LifeStep` is the app/product name used in user-facing surfaces and product documentation.
+- `Life Calendar` remains the name of the calendar mechanic and technical engine concepts where stability matters.
+- Branding passes should avoid mass-renaming engine files, routes, helpers, or persistence structures unless product behavior changes require it.

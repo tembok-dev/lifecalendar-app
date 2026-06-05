@@ -2,7 +2,7 @@
   "name": "lifecalendar-app",
   "private": true,
   "version": "0.1.0",
-  "description": "Life Calendar App monorepo foundation",
+  "description": "LifeStep monorepo for the app, API, and shared Life Calendar engine",
   "packageManager": "pnpm@10.0.0",
   "scripts": {
     "dev:web": "pnpm --filter @lifecalendar/web dev",

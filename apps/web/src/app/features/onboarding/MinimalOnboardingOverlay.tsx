@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { APP_NAME, APP_TAGLINE } from "@lifecalendar/shared";
+import { BrandAsset } from "../brand/BrandAsset";
 
 interface MinimalOnboardingOverlayProps {
   open: boolean;
@@ -23,10 +25,10 @@ export function MinimalOnboardingOverlay({ open, creating, error, onCreate }: Mi
       <section className="w-full max-w-md rounded-2xl border border-line/60 bg-surface/78 p-6 shadow-soft backdrop-blur-md">
         {step === "intro" ? (
           <>
-            <p className="text-xs tracking-[0.22em] text-zinc-300/75">LIFE CALENDAR</p>
-            <h2 className="mt-2 text-2xl font-medium text-zinc-100">Begin your poster</h2>
+            <BrandAsset asset="wordmark" className="h-5 w-[112px] text-zinc-100/82" label={APP_NAME} />
+            <h2 className="mt-2 text-2xl font-medium text-zinc-100">Begin your LifeStep</h2>
             <p className="mt-2 text-sm text-zinc-300/80">
-              A calm life poster that maps your years in one canvas.
+              {APP_TAGLINE} The Life Calendar grid will help you see your years, your moments, and the steps still ahead.
             </p>
             <button
               type="button"
@@ -43,7 +45,7 @@ export function MinimalOnboardingOverlay({ open, creating, error, onCreate }: Mi
               void onCreate({ name, birthDate });
             }}
           >
-            <h2 className="text-lg font-medium text-zinc-100">Create profile</h2>
+            <h2 className="text-lg font-medium text-zinc-100">Create your profile</h2>
 
             <label className="mt-4 block text-xs text-zinc-300/80" htmlFor="onboarding-name">
               Name
@@ -92,4 +94,3 @@ export function MinimalOnboardingOverlay({ open, creating, error, onCreate }: Mi
     </div>
   );
 }
-

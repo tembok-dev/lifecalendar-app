@@ -22,6 +22,9 @@
   --color-accent-strong: rgb(83, 185, 205);
   --color-danger: rgb(205, 59, 87);
   --color-danger-strong: rgb(167, 39, 65);
+  --color-brand-primary: rgba(236, 242, 247, 0.96);
+  --color-brand-muted: rgba(223, 232, 241, 0.76);
+  --color-brand-watermark: rgba(223, 232, 241, 0.07);
 
   --surface-page: var(--color-bg-soft);
   --surface-poster: var(--color-poster);
@@ -151,6 +154,9 @@
   --color-text-primary: #16202a;
   --color-text-secondary: rgba(22, 32, 42, 0.82);
   --color-text-muted: rgba(63, 78, 93, 0.72);
+  --color-brand-primary: rgba(22, 32, 42, 0.96);
+  --color-brand-muted: rgba(22, 32, 42, 0.74);
+  --color-brand-watermark: rgba(22, 32, 42, 0.08);
 }
 
 * {
@@ -170,6 +176,20 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+.brand-asset {
+  display: block;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask-image: var(--brand-asset-url);
+  mask-image: var(--brand-asset-url);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .no-scrollbar {

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.8 - LifeStep Brand Pass
+- Rebranded user-facing app copy from `Life Calendar` to `LifeStep` across visible UI, browser title/meta, onboarding, and empty states.
+- Added shared app branding constants for the product name and tagline.
+- Kept technical calendar internals stable, including Life Calendar engine/component naming.
+- Updated README, product docs, and package descriptions to distinguish the `LifeStep` product from the `Life Calendar` grid mechanic.
+
 ## v0.7.6B - Tooltip Unification + Cell Hover Cleanup
 - Added a reusable portaled tooltip primitive with delayed reveal and viewport-safe positioning.
 - Replaced visible native browser tooltip usage in calendar event cells, rail popover rows, and poster nav icons with the shared tooltip surface.

@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.3.0",
   "type": "module",
+  "description": "Shared LifeStep types, contracts, and Life Calendar engine utilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

@@ -210,7 +210,7 @@ export function LifeCalendarGrid({
         />
         <ModalBody>
           {allEvents.length === 0 ? (
-            <p className="text-xs text-muted">No events yet.</p>
+            <p className="text-xs text-muted">No moments yet.</p>
           ) : (
             <div className="space-y-2">
               {allEvents.map((event) => (
